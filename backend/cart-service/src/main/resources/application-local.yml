@@ -1,0 +1,5 @@
+DB_URL: jdbc:postgresql://localhost:5436/cart
+DB_USER: postgres
+DB_PASS: postgres
+KC_ISSUER: http://localhost:8081/realms/ecommerce
+ZIPKIN_ENDPOINT: http://localhost:9411/api/v2/spans

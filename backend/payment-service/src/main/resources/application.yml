@@ -1,0 +1,37 @@
+spring:
+  application.name: payment-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/payments}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASS:postgres}
+  jpa:
+    hibernate.ddl-auto: validate
+    open-in-view: false
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server.port: 8085
+
+spring.kafka:
+  bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:29092}
+  consumer:
+    group-id: payment-service
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    properties.spring.json.trusted.packages: "*"
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+ecommerce:
+  topics:
+    order-events: ${ORDER_TOPIC:order-events}
+    payment-events: ${PAYMENT_TOPIC:payment-events}
+    payment-dlq: ${PAYMENT_DLQ:payment-events.DLQ}
+  payment.provider: stub
+
+spring.security.oauth2.resourceserver.jwt.issuer-uri: ${KC_ISSUER:http://localhost:8081/realms/ecommerce}
+
+management:
+  endpoints.web.exposure.include: health,info,prometheus
+  tracing.sampling.probability: 1.0
+management.zipkin.tracing.endpoint: ${ZIPKIN_ENDPOINT:http://localhost:9411/api/v2/spans}

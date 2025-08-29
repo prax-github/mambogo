@@ -1,0 +1,59 @@
+version: "3.9"
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports: ["2181:2181"]
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on: [zookeeper]
+    ports: ["9092:9092", "29092:29092"]
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:29092
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  postgres-products:
+    image: postgres:15
+    environment: [POSTGRES_PASSWORD=postgres, POSTGRES_USER=postgres, POSTGRES_DB=products]
+    ports: ["5433:5432"]
+
+  postgres-cart:
+    image: postgres:15
+    environment: [POSTGRES_PASSWORD=postgres, POSTGRES_USER=postgres, POSTGRES_DB=cart]
+    ports: ["5436:5432"]
+
+  postgres-orders:
+    image: postgres:15
+    environment: [POSTGRES_PASSWORD=postgres, POSTGRES_USER=postgres, POSTGRES_DB=orders]
+    ports: ["5434:5432"]
+    volumes:
+      - ./sql/orders-init.sql:/docker-entrypoint-initdb.d/01-orders.sql:ro
+
+  postgres-payments:
+    image: postgres:15
+    environment: [POSTGRES_PASSWORD=postgres, POSTGRES_USER=postgres, POSTGRES_DB=payments]
+    ports: ["5435:5432"]
+
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - ./keycloak/realm-export:/opt/keycloak/data/import
+    ports: ["8081:8080"]
+
+  zipkin:
+    image: openzipkin/zipkin:2.24
+    ports: ["9411:9411"]

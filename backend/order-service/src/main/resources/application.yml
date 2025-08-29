@@ -1,0 +1,39 @@
+spring:
+  application.name: order-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/orders}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASS:postgres}
+  jpa:
+    hibernate.ddl-auto: validate
+    open-in-view: false
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server.port: 8084
+
+spring.kafka:
+  bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:29092}
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    properties.spring.json.add.type.headers: false
+  consumer:
+    group-id: order-service
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    properties.spring.json.trusted.packages: "*"
+
+ecommerce:
+  topics:
+    order-events: ${ORDER_TOPIC:order-events}
+    payment-events: ${PAYMENT_TOPIC:payment-events}
+  outbox:
+    poll-interval-ms: 1000
+    batch-size: 100
+
+spring.security.oauth2.resourceserver.jwt.issuer-uri: ${KC_ISSUER:http://localhost:8081/realms/ecommerce}
+
+management:
+  endpoints.web.exposure.include: health,info,prometheus
+  tracing.sampling.probability: 1.0
+management.zipkin.tracing.endpoint: ${ZIPKIN_ENDPOINT:http://localhost:9411/api/v2/spans}

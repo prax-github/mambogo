@@ -19,6 +19,12 @@ paths:
       summary: Create new order
       description: Create a new order with idempotency support
       operationId: createOrder
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: { type: string, maxLength: 64 }
+          description: Prevents duplicate order creation; same key returns the original result for 24h.
       requestBody:
         required: true
         content:

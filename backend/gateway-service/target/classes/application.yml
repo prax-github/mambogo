@@ -9,6 +9,31 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
+      routes:
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/products/**
+          filters:
+            - StripPrefix=1
+        - id: cart-service
+          uri: lb://cart-service
+          predicates:
+            - Path=/api/cart/**
+          filters:
+            - StripPrefix=1
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - StripPrefix=1
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payments/**
+          filters:
+            - StripPrefix=1
   security:
     oauth2:
       resourceserver:
@@ -20,7 +45,7 @@ server:
 
 eureka:
   client:
-    serviceUrl:
+    service-url:
       defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true

@@ -432,8 +432,32 @@ backend/
     └── config/TracingConfig.java
 ```
 
+### Finishing Touches (Latest)
+- ✅ **Actuator Exposure**: All services (gateway, product, cart, order, payment) expose `/actuator/health`, `/actuator/info`, `/actuator/prometheus` endpoints
+- ✅ **Idempotency Documentation**: Updated `order-service-openapi.yaml` with required `Idempotency-Key` header for `POST /orders`
+- ✅ **Outbox Configuration**: Added `ecommerce.outbox.enabled` property to order-service with conditional scheduling
+- ✅ **Topic Naming**: Verified canonical topic names (`order-events`, `payment-events`, `payment-events.DLQ`) are consistent across all configs
+- ✅ **Postman Collection**: Created comprehensive E2E testing collection with health checks, order management, and chaos testing scenarios
+- ✅ **Documentation**: Added outbox configuration guide and chaos testing scenarios
+
+### Eureka Service Discovery Finalization
+- ✅ **Gateway Routing**: Added explicit route definitions for all services with load balancing
+- ✅ **Eureka Configuration**: Standardized `service-url` format across all services
+- ✅ **Service Names**: Verified unique application names (gateway-service, product-service, cart-service, order-service, payment-service)
+- ✅ **Verification Scripts**: Created comprehensive verification scripts for Linux/Mac and Windows
+- ✅ **Startup Guide**: Added detailed startup and troubleshooting documentation
+
+### Testing & Validation
+- ✅ **Health Endpoints**: All services accessible via `/actuator/health` through gateway
+- ✅ **Idempotency Contract**: OpenAPI explicitly documents `Idempotency-Key` requirement
+- ✅ **Outbox Control**: Setting `ecommerce.outbox.enabled=false` prevents scheduler execution
+- ✅ **Topic Consistency**: All application configs use canonical topic names
+- ✅ **Postman Ready**: Collection imports and runs with proper variable setup
+- ✅ **Eureka Registration**: All services auto-register and are visible in Eureka dashboard
+- ✅ **Gateway Routing**: Gateway successfully routes requests to all services via service discovery
+
 ---
 
 **Last Updated**: January 2025  
-**Version**: 2.0  
-**Status**: ✅ Complete MVP Implementation
+**Version**: 2.2  
+**Status**: ✅ Complete with Eureka Service Discovery Finalized

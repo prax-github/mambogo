@@ -1,0 +1,368 @@
+{
+  "info": {
+    "name": "Mambogo E2E Tests",
+    "description": "End-to-end testing collection for Mambogo e-commerce microservices",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "productId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "Gateway Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["actuator", "health"]
+            },
+            "description": "Check gateway service health"
+          },
+          "response": []
+        },
+        {
+          "name": "Product Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/actuator/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "actuator", "health"]
+            },
+            "description": "Check product service health through gateway"
+          },
+          "response": []
+        },
+        {
+          "name": "Cart Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/actuator/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cart", "actuator", "health"]
+            },
+            "description": "Check cart service health through gateway"
+          },
+          "response": []
+        },
+        {
+          "name": "Order Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/actuator/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "actuator", "health"]
+            },
+            "description": "Check order service health through gateway"
+          },
+          "response": []
+        },
+        {
+          "name": "Payment Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/actuator/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", "actuator", "health"]
+            },
+            "description": "Check payment service health through gateway"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Order Management",
+      "item": [
+        {
+          "name": "Create Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('orderId', response.data.id);",
+                  "    console.log('Order created with ID:', response.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "req-123",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 2,\n      \"price\": 29.99\n    }\n  ],\n  \"shippingAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"Anytown\",\n    \"state\": \"CA\",\n    \"zipCode\": \"12345\",\n    \"country\": \"USA\"\n  },\n  \"notes\": \"Test order\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"]
+            },
+            "description": "Create a new order with idempotency key"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "{{orderId}}"]
+            },
+            "description": "Retrieve order details by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders?userId=550e8400-e29b-41d4-a716-446655440000&page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get orders for a specific user"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Product Management",
+      "item": [
+        {
+          "name": "Get Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.length > 0) {",
+                  "        pm.collectionVariables.set('productId', response.data[0].id);",
+                  "        console.log('Product ID set:', response.data[0].id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get list of products"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{productId}}"]
+            },
+            "description": "Get product details by ID"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cart Management",
+      "item": [
+        {
+          "name": "Add Item to Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cart", "items"]
+            },
+            "description": "Add item to user's cart"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart?userId=550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cart"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "550e8400-e29b-41d4-a716-446655440000"
+                }
+              ]
+            },
+            "description": "Get user's cart contents"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payment Management",
+      "item": [
+        {
+          "name": "Process Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"amount\": 59.98,\n  \"currency\": \"USD\",\n  \"paymentMethod\": \"CREDIT_CARD\",\n  \"cardDetails\": {\n    \"cardNumber\": \"4111111111111111\",\n    \"expiryMonth\": 12,\n    \"expiryYear\": 2025,\n    \"cvv\": \"123\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments"]
+            },
+            "description": "Process payment for an order"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import com.mambogo.order.repository.OutboxEventRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,12 +27,20 @@ public class OutboxEventPublisher {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
     
+    @Value("${ecommerce.outbox.enabled:true}")
+    private boolean outboxEnabled;
+    
     /**
      * Publish pending events every 30 seconds
      */
     @Scheduled(fixedRate = 30000)
     @Transactional
     public void publishPendingEvents() {
+        if (!outboxEnabled) {
+            logger.debug("Outbox publishing is disabled, skipping...");
+            return;
+        }
+        
         logger.info("Starting to publish pending outbox events...");
         
         List<OutboxEvent> pendingEvents = outboxEventRepository.findPendingEvents();
@@ -115,6 +124,11 @@ public class OutboxEventPublisher {
     @Scheduled(cron = "0 0 2 * * ?")
     @Transactional
     public void cleanupOldEvents() {
+        if (!outboxEnabled) {
+            logger.debug("Outbox publishing is disabled, skipping cleanup...");
+            return;
+        }
+        
         logger.info("Starting cleanup of old sent events...");
         
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(7); // Keep events for 7 days

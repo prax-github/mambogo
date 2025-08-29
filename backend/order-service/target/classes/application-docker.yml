@@ -1,0 +1,5 @@
+DB_URL: jdbc:postgresql://postgres-orders:5432/orders
+DB_USER: postgres
+DB_PASS: postgres
+KC_ISSUER: http://keycloak:8080/realms/ecommerce
+ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans

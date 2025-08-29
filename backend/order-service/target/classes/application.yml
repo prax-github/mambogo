@@ -11,20 +11,27 @@ spring:
     hibernate.ddl-auto: validate
     open-in-view: false
     properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:29092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: order-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KC_ISSUER:http://localhost:8081/realms/ecommerce}
 
-server.port: 8084
-
-spring.kafka:
-  bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:29092}
-  producer:
-    key-serializer: org.apache.kafka.common.serialization.StringSerializer
-    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    properties.spring.json.add.type.headers: false
-  consumer:
-    group-id: order-service
-    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-    properties.spring.json.trusted.packages: "*"
+server:
+  port: 8084
 
 ecommerce:
   topics:
@@ -34,7 +41,14 @@ ecommerce:
     poll-interval-ms: 1000
     batch-size: 100
 
-spring.security.oauth2.resourceserver.jwt.issuer-uri: ${KC_ISSUER:http://localhost:8081/realms/ecommerce}
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    metadata-map:
+      management.port: ${server.port}
 
 management:
   endpoints.web.exposure.include: health,info,prometheus

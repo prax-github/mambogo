@@ -1,0 +1,14 @@
+server:
+  port: 8761
+
+spring:
+  application.name: eureka-server
+
+# (We are not using Config Server for this module; keep it self-contained)
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+management:
+  endpoints.web.exposure.include: health,info

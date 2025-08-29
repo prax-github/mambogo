@@ -55,3 +55,37 @@ management:
   endpoints.web.exposure.include: health,info,prometheus
   tracing.sampling.probability: 1.0
 management.zipkin.tracing.endpoint: ${ZIPKIN_ENDPOINT:http://localhost:9411/api/v2/spans}
+
+# Resilience4j Configuration
+resilience4j:
+  timelimiter:
+    instances:
+      outbound:
+        timeoutDuration: 3s
+  retry:
+    instances:
+      outbound:
+        maxRetryAttempts: 3
+        waitDuration: 500ms
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2.0
+        randomizedWait: true
+        retryExceptions:
+          - java.io.IOException
+          - org.springframework.web.reactive.function.client.WebClientRequestException
+        ignoreExceptions:
+          - org.springframework.web.reactive.function.client.WebClientResponseException$BadRequest
+  circuitbreaker:
+    instances:
+      outbound:
+        slidingWindowSize: 20
+        minimumNumberOfCalls: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+# Logging
+logging:
+  level:
+    io.github.resilience4j: INFO

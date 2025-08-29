@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mambogo-prod-config
+  namespace: mambogo-prod
+data:
+  # Service URLs (Kubernetes-native)
+  payment-service-url: "http://payment-service"
+  product-service-url: "http://product-service"
+  cart-service-url: "http://cart-service"
+  
+  # Infrastructure
+  kafka-bootstrap-servers: "kafka-service:9092"
+  eureka-server-url: "http://eureka-server:8761"
+  
+  # Database Configuration
+  database-url: "jdbc:postgresql://orders-db:5432/orders"
+  database-username: "postgres"
+  database-password: "postgres"
+  
+  # Kafka Topics
+  order-topic: "order-events"
+  payment-topic: "payment-events"
+  payment-dlq: "payment-events.DLQ"
+  
+  # Security
+  keycloak-issuer: "http://keycloak:8080/realms/ecommerce"
+  
+  # Monitoring
+  zipkin-endpoint: "http://zipkin:9411/api/v2/spans"
+  
+  # Application Settings
+  spring-profiles-active: "prod"
+  outbox-enabled: "true"
+  outbox-poll-interval-ms: "1000"
+  outbox-batch-size: "100"

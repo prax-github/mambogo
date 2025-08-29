@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  mambogo-overview-dashboard.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Mambogo E-commerce Overview",
+        "tags": ["mambogo", "ecommerce"],
+        "style": "dark",
+        "timezone": "browser",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Order Service Metrics",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(http_requests_total{service=\"order-service\"}[5m])",
+                "legendFormat": "{{method}} {{endpoint}}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Payment Service Metrics",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(http_requests_total{service=\"payment-service\"}[5m])",
+                "legendFormat": "{{method}} {{endpoint}}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Circuit Breaker Status",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "resilience4j_circuitbreaker_state{name=\"outbound\"}",
+                "legendFormat": "{{service}} - {{state}}"
+              }
+            ],
+            "gridPos": {"h": 4, "w": 6, "x": 0, "y": 8}
+          },
+          {
+            "id": 4,
+            "title": "Response Time (95th percentile)",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+                "legendFormat": "{{service}}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12}
+          },
+          {
+            "id": 5,
+            "title": "Error Rate",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(http_requests_total{status=~\"5..\"}[5m]) / rate(http_requests_total[5m])",
+                "legendFormat": "{{service}}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12}
+          }
+        ],
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "refresh": "30s"
+      }
+    }
+
+  mambogo-business-dashboard.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Mambogo Business Metrics",
+        "tags": ["mambogo", "business"],
+        "style": "dark",
+        "timezone": "browser",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Orders Created",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "increase(order_events_total{event_type=\"ORDER_CREATED\"}[1h])",
+                "legendFormat": "Orders/hour"
+              }
+            ],
+            "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Payments Processed",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "increase(payment_events_total{event_type=\"PAYMENT_PROCESSED\"}[1h])",
+                "legendFormat": "Payments/hour"
+              }
+            ],
+            "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Payment Success Rate",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "increase(payment_events_total{event_type=\"PAYMENT_SUCCESS\"}[1h]) / increase(payment_events_total[1h]) * 100",
+                "legendFormat": "Success Rate %"
+              }
+            ],
+            "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0}
+          },
+          {
+            "id": 4,
+            "title": "Order Status Distribution",
+            "type": "piechart",
+            "targets": [
+              {
+                "expr": "order_status_total",
+                "legendFormat": "{{status}}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4}
+          }
+        ],
+        "time": {
+          "from": "now-24h",
+          "to": "now"
+        },
+        "refresh": "1m"
+      }
+    }

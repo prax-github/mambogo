@@ -1,0 +1,207 @@
+# Network Policy for Order Service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: order-service-network-policy
+  namespace: mambogo-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: order-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: gateway-service
+    ports:
+    - protocol: TCP
+      port: 8084
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: payment-service
+    ports:
+    - protocol: TCP
+      port: 8085
+  - to:
+    - podSelector:
+        matchLabels:
+          app: product-service
+    ports:
+    - protocol: TCP
+      port: 8082
+  - to:
+    - podSelector:
+        matchLabels:
+          app: kafka
+    ports:
+    - protocol: TCP
+      port: 9092
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+        matchExpressions:
+        - key: database
+          operator: In
+          values: ["orders"]
+    ports:
+    - protocol: TCP
+      port: 5432
+
+---
+# Network Policy for Payment Service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: payment-service-network-policy
+  namespace: mambogo-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: payment-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: order-service
+    ports:
+    - protocol: TCP
+      port: 8085
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: kafka
+    ports:
+    - protocol: TCP
+      port: 9092
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+        matchExpressions:
+        - key: database
+          operator: In
+          values: ["payments"]
+    ports:
+    - protocol: TCP
+      port: 5432
+
+---
+# Network Policy for Product Service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: product-service-network-policy
+  namespace: mambogo-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: product-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: order-service
+    ports:
+    - protocol: TCP
+      port: 8082
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+        matchExpressions:
+        - key: database
+          operator: In
+          values: ["products"]
+    ports:
+    - protocol: TCP
+      port: 5432
+
+---
+# Network Policy for Cart Service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cart-service-network-policy
+  namespace: mambogo-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: cart-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: gateway-service
+    ports:
+    - protocol: TCP
+      port: 8083
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+        matchExpressions:
+        - key: database
+          operator: In
+          values: ["cart"]
+    ports:
+    - protocol: TCP
+      port: 5432
+
+---
+# Network Policy for Gateway Service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: gateway-service-network-policy
+  namespace: mambogo-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: gateway-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: order-service
+    ports:
+    - protocol: TCP
+      port: 8084
+  - to:
+    - podSelector:
+        matchLabels:
+          app: cart-service
+    ports:
+    - protocol: TCP
+      port: 8083
+  - to:
+    - podSelector:
+        matchLabels:
+          app: product-service
+    ports:
+    - protocol: TCP
+      port: 8082

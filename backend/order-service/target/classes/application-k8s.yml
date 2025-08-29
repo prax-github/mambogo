@@ -1,0 +1,84 @@
+# Kubernetes Environment Configuration
+spring:
+  profiles:
+    active: k8s
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://orders-db:5432/orders}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASS:postgres}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka-service:9092}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KC_ISSUER:http://keycloak:8080/realms/ecommerce}
+
+server:
+  port: 8084
+
+ecommerce:
+  topics:
+    order-events: ${ORDER_TOPIC:order-events}
+    payment-events: ${PAYMENT_TOPIC:payment-events}
+  outbox:
+    enabled: ${OUTBOX_ENABLED:true}
+    poll-interval-ms: ${OUTBOX_POLL_INTERVAL_MS:1000}
+    batch-size: ${OUTBOX_BATCH_SIZE:100}
+
+# Disable Eureka for Kubernetes environment
+eureka:
+  client:
+    enabled: false
+
+management:
+  endpoints.web.exposure.include: health,info,prometheus,readiness
+  tracing.sampling.probability: 1.0
+  zipkin.tracing.endpoint: ${ZIPKIN_ENDPOINT:http://zipkin:9411/api/v2/spans}
+
+# Service URLs for Kubernetes
+payment:
+  service:
+    url: ${PAYMENT_SERVICE_URL:http://payment-service}
+product:
+  service:
+    url: ${PRODUCT_SERVICE_URL:http://product-service}
+cart:
+  service:
+    url: ${CART_SERVICE_URL:http://cart-service}
+
+# Resilience4j Configuration
+resilience4j:
+  timelimiter:
+    instances:
+      outbound:
+        timeoutDuration: 3s
+  retry:
+    instances:
+      outbound:
+        maxRetryAttempts: 3
+        waitDuration: 500ms
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2.0
+        randomizedWait: true
+        retryExceptions:
+          - java.io.IOException
+          - org.springframework.web.reactive.function.client.WebClientRequestException
+        ignoreExceptions:
+          - org.springframework.web.reactive.function.client.WebClientResponseException$BadRequest
+  circuitbreaker:
+    instances:
+      outbound:
+        slidingWindowSize: 20
+        minimumNumberOfCalls: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+# Logging
+logging:
+  level:
+    io.github.resilience4j: INFO
+    com.mambogo: INFO
+    org.springframework.web: INFO

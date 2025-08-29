@@ -1,0 +1,118 @@
+# Service Account for Mambogo applications
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mambogo-service-account
+  namespace: mambogo-prod
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mambogo-service-account
+  namespace: mambogo-demo
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mambogo-service-account
+  namespace: mambogo-local
+
+---
+# Role for Mambogo applications
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mambogo-role
+  namespace: mambogo-prod
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mambogo-role
+  namespace: mambogo-demo
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mambogo-role
+  namespace: mambogo-local
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+
+---
+# Role Binding for Mambogo applications
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mambogo-role-binding
+  namespace: mambogo-prod
+subjects:
+- kind: ServiceAccount
+  name: mambogo-service-account
+  namespace: mambogo-prod
+roleRef:
+  kind: Role
+  name: mambogo-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mambogo-role-binding
+  namespace: mambogo-demo
+subjects:
+- kind: ServiceAccount
+  name: mambogo-service-account
+  namespace: mambogo-demo
+roleRef:
+  kind: Role
+  name: mambogo-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mambogo-role-binding
+  namespace: mambogo-local
+subjects:
+- kind: ServiceAccount
+  name: mambogo-service-account
+  namespace: mambogo-local
+roleRef:
+  kind: Role
+  name: mambogo-role
+  apiGroup: rbac.authorization.k8s.io

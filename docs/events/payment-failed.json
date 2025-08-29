@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PaymentFailed",
+  "description": "Event emitted when a payment fails",
+  "type": "object",
+  "required": [
+    "eventId",
+    "eventType",
+    "timestamp",
+    "data"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique event identifier"
+    },
+    "eventType": {
+      "type": "string",
+      "const": "PaymentFailed",
+      "description": "Event type"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event timestamp in ISO 8601 format"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "paymentId",
+        "orderId",
+        "userId",
+        "amount",
+        "currency",
+        "failureReason",
+        "failureCode"
+      ],
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Payment ID"
+        },
+        "orderId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Associated order ID"
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "User ID"
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Payment amount"
+        },
+        "currency": {
+          "type": "string",
+          "description": "Payment currency"
+        },
+        "failureReason": {
+          "type": "string",
+          "description": "Human-readable failure reason"
+        },
+        "failureCode": {
+          "type": "string",
+          "description": "Payment processor failure code"
+        },
+        "paymentMethod": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["CREDIT_CARD", "DEBIT_CARD"],
+              "description": "Payment method type"
+            },
+            "cardNumber": {
+              "type": "string",
+              "description": "Masked card number (last 4 digits only)"
+            }
+          },
+          "description": "Payment method information (sanitized)"
+        },
+        "processorResponse": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Processor error code"
+            },
+            "message": {
+              "type": "string",
+              "description": "Processor error message"
+            },
+            "avsResult": {
+              "type": "string",
+              "description": "Address verification result"
+            },
+            "cvvResult": {
+              "type": "string",
+              "description": "CVV verification result"
+            }
+          },
+          "description": "Payment processor error details"
+        },
+        "retryable": {
+          "type": "boolean",
+          "description": "Whether the payment can be retried"
+        },
+        "suggestedAction": {
+          "type": "string",
+          "enum": ["RETRY", "UPDATE_PAYMENT_METHOD", "CONTACT_SUPPORT"],
+          "description": "Suggested action for the user"
+        }
+      },
+      "description": "Payment failure data"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "correlationId": {
+          "type": "string",
+          "description": "Correlation ID for tracing"
+        },
+        "source": {
+          "type": "string",
+          "description": "Event source service"
+        },
+        "version": {
+          "type": "string",
+          "description": "Event schema version"
+        }
+      },
+      "description": "Event metadata"
+    }
+  }
+}

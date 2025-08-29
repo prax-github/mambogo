@@ -17,6 +17,8 @@ services:
       KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+      KAFKA_DELETE_TOPIC_ENABLE: true
 
   postgres-products:
     image: postgres:15
@@ -34,6 +36,7 @@ services:
     ports: ["5434:5432"]
     volumes:
       - ./sql/orders-init.sql:/docker-entrypoint-initdb.d/01-orders.sql:ro
+      - ./sql/outbox-init.sql:/docker-entrypoint-initdb.d/02-outbox.sql:ro
 
   postgres-payments:
     image: postgres:15

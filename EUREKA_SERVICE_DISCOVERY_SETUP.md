@@ -369,8 +369,71 @@ eureka:
    - Implement circuit breakers
    - Add rate limiting
 
+## Recent Updates
+
+### Infrastructure Fixes
+- ✅ **Kafka Configuration**: Fixed Kafka broker configuration in `docker-compose.yml` to resolve listener name issues
+- ✅ **Keycloak Realm**: Updated `ecommerce-realm.json` with correct client ID `react-spa` and demo user
+
+### API Contracts
+- ✅ **OpenAPI Specifications**: Created comprehensive OpenAPI YAML contracts for all services:
+  - Product Service: `GET /products`, `GET /products/{id}`
+  - Cart Service: `POST /cart/{userId}/items`, `GET /cart/{userId}`
+  - Order Service: `POST /orders` (with idempotency), `GET /orders/{id}`
+  - Payment Service: `POST /payments`
+- ✅ **Common Error Model**: Standardized error response format with `code`, `message`, `traceId`
+
+### Event Schemas
+- ✅ **Kafka Event Schemas**: Created JSON schemas for domain events:
+  - `OrderCreated`: Order creation events
+  - `PaymentAuthorized`: Payment authorization events  
+  - `PaymentFailed`: Payment failure events
+
+### Outbox Pattern Implementation
+- ✅ **Order Service Outbox**: Implemented complete outbox pattern:
+  - JPA `OutboxEvent` entity with retry logic
+  - `OutboxEventRepository` with query methods
+  - `OutboxEventPublisher` service with scheduled publishing
+  - SQL initialization script for outbox table
+
+### Observability
+- ✅ **Zipkin Tracing**: Added Micrometer tracing configuration to all services:
+  - Order Service, Product Service, Cart Service, Payment Service, Gateway Service
+  - Configured with `Sampler.ALWAYS_SAMPLE` for comprehensive tracing
+
+### File Structure
+```
+docs/
+├── contracts/
+│   ├── product-service-openapi.yaml
+│   ├── cart-service-openapi.yaml
+│   ├── order-service-openapi.yaml
+│   └── payment-service-openapi.yaml
+└── events/
+    ├── order-created.json
+    ├── payment-authorized.json
+    └── payment-failed.json
+
+infra/
+├── docker-compose.yml (fixed Kafka config)
+├── keycloak/realm-export/ecommerce-realm.json (updated)
+└── sql/
+    └── outbox-init.sql (new)
+
+backend/
+├── order-service/
+│   ├── src/main/java/com/mambogo/order/
+│   │   ├── entity/OutboxEvent.java
+│   │   ├── repository/OutboxEventRepository.java
+│   │   ├── service/OutboxEventPublisher.java
+│   │   └── config/TracingConfig.java
+│   └── pom.xml (added Kafka dependency)
+└── [other services]/
+    └── config/TracingConfig.java
+```
+
 ---
 
-**Last Updated**: August 29, 2025  
-**Version**: 1.0  
-**Status**: ✅ Implemented and Tested
+**Last Updated**: January 2025  
+**Version**: 2.0  
+**Status**: ✅ Complete MVP Implementation

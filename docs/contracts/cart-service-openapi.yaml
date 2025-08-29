@@ -1,0 +1,339 @@
+openapi: 3.0.3
+info:
+  title: Cart Service API
+  description: API for managing shopping carts in the e-commerce system
+  version: 1.0.0
+  contact:
+    name: Mambogo Team
+    email: team@mambogo.com
+
+servers:
+  - url: http://localhost:8083
+    description: Local development server
+  - url: http://gateway-service:8080/api/cart
+    description: Gateway proxy
+
+paths:
+  /cart/{userId}:
+    get:
+      summary: Get user's cart
+      description: Retrieve the shopping cart for a specific user
+      operationId: getCart
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Cart retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+        '404':
+          description: Cart not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /cart/{userId}/items:
+    post:
+      summary: Add item to cart
+      description: Add a product item to the user's shopping cart
+      operationId: addItemToCart
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCartItemRequest'
+      responses:
+        '201':
+          description: Item added to cart successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /cart/{userId}/items/{itemId}:
+    put:
+      summary: Update cart item quantity
+      description: Update the quantity of a specific item in the cart
+      operationId: updateCartItem
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            format: uuid
+        - name: itemId
+          in: path
+          required: true
+          description: Cart item ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCartItemRequest'
+      responses:
+        '200':
+          description: Cart item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Cart item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove item from cart
+      description: Remove a specific item from the user's cart
+      operationId: removeCartItem
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            format: uuid
+        - name: itemId
+          in: path
+          required: true
+          description: Cart item ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Item removed successfully
+        '404':
+          description: Cart item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /cart/{userId}/clear:
+    delete:
+      summary: Clear cart
+      description: Remove all items from the user's cart
+      operationId: clearCart
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Cart cleared successfully
+        '404':
+          description: Cart not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    CartItem:
+      type: object
+      required:
+        - id
+        - productId
+        - productName
+        - price
+        - quantity
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Cart item ID
+        productId:
+          type: string
+          format: uuid
+          description: Product ID
+        productName:
+          type: string
+          description: Product name
+        price:
+          type: number
+          format: decimal
+          minimum: 0
+          description: Product price
+        quantity:
+          type: integer
+          minimum: 1
+          description: Item quantity
+        imageUrl:
+          type: string
+          format: uri
+          description: Product image URL
+
+    Cart:
+      type: object
+      required:
+        - id
+        - userId
+        - items
+        - totalAmount
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Cart ID
+        userId:
+          type: string
+          format: uuid
+          description: User ID
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+          description: Cart items
+        totalAmount:
+          type: number
+          format: decimal
+          minimum: 0
+          description: Total cart amount
+        itemCount:
+          type: integer
+          minimum: 0
+          description: Total number of items
+        createdAt:
+          type: string
+          format: date-time
+          description: Cart creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Cart last update timestamp
+
+    AddCartItemRequest:
+      type: object
+      required:
+        - productId
+        - quantity
+      properties:
+        productId:
+          type: string
+          format: uuid
+          description: Product ID to add
+        quantity:
+          type: integer
+          minimum: 1
+          description: Quantity to add
+
+    UpdateCartItemRequest:
+      type: object
+      required:
+        - quantity
+      properties:
+        quantity:
+          type: integer
+          minimum: 1
+          description: New quantity
+
+    CartResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Cart'
+        message:
+          type: string
+          description: Response message
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+      properties:
+        code:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error message
+        traceId:
+          type: string
+          description: Request trace ID for debugging
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp

@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OrderCreated",
+  "description": "Event emitted when a new order is created",
+  "type": "object",
+  "required": [
+    "eventId",
+    "eventType",
+    "timestamp",
+    "data"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique event identifier"
+    },
+    "eventType": {
+      "type": "string",
+      "const": "OrderCreated",
+      "description": "Event type"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event timestamp in ISO 8601 format"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "orderId",
+        "userId",
+        "items",
+        "totalAmount",
+        "shippingAddress"
+      ],
+      "properties": {
+        "orderId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Order ID"
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "User ID"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "productId",
+              "productName",
+              "price",
+              "quantity"
+            ],
+            "properties": {
+              "productId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Product ID"
+              },
+              "productName": {
+                "type": "string",
+                "description": "Product name"
+              },
+              "price": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Product price at time of order"
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Item quantity"
+              },
+              "imageUrl": {
+                "type": "string",
+                "format": "uri",
+                "description": "Product image URL"
+              }
+            }
+          },
+          "description": "Order items"
+        },
+        "totalAmount": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total order amount"
+        },
+        "shippingAddress": {
+          "type": "object",
+          "required": [
+            "street",
+            "city",
+            "state",
+            "zipCode",
+            "country"
+          ],
+          "properties": {
+            "street": {
+              "type": "string",
+              "description": "Street address"
+            },
+            "city": {
+              "type": "string",
+              "description": "City"
+            },
+            "state": {
+              "type": "string",
+              "description": "State/province"
+            },
+            "zipCode": {
+              "type": "string",
+              "description": "ZIP/postal code"
+            },
+            "country": {
+              "type": "string",
+              "description": "Country"
+            },
+            "apartment": {
+              "type": "string",
+              "description": "Apartment/suite number"
+            }
+          },
+          "description": "Shipping address"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Order notes"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "description": "Idempotency key used for order creation"
+        }
+      },
+      "description": "Order data"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "correlationId": {
+          "type": "string",
+          "description": "Correlation ID for tracing"
+        },
+        "source": {
+          "type": "string",
+          "description": "Event source service"
+        },
+        "version": {
+          "type": "string",
+          "description": "Event schema version"
+        }
+      },
+      "description": "Event metadata"
+    }
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PaymentAuthorized",
+  "description": "Event emitted when a payment is authorized",
+  "type": "object",
+  "required": [
+    "eventId",
+    "eventType",
+    "timestamp",
+    "data"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique event identifier"
+    },
+    "eventType": {
+      "type": "string",
+      "const": "PaymentAuthorized",
+      "description": "Event type"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event timestamp in ISO 8601 format"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "paymentId",
+        "orderId",
+        "userId",
+        "amount",
+        "currency",
+        "transactionId",
+        "paymentMethod"
+      ],
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Payment ID"
+        },
+        "orderId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Associated order ID"
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "User ID"
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Payment amount"
+        },
+        "currency": {
+          "type": "string",
+          "description": "Payment currency"
+        },
+        "transactionId": {
+          "type": "string",
+          "description": "External payment processor transaction ID"
+        },
+        "paymentMethod": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["CREDIT_CARD", "DEBIT_CARD"],
+              "description": "Payment method type"
+            },
+            "cardNumber": {
+              "type": "string",
+              "description": "Masked card number (last 4 digits only)"
+            },
+            "cardholderName": {
+              "type": "string",
+              "description": "Cardholder name"
+            }
+          },
+          "description": "Payment method information (sanitized)"
+        },
+        "authorizationCode": {
+          "type": "string",
+          "description": "Payment authorization code"
+        },
+        "processorResponse": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Processor response code"
+            },
+            "message": {
+              "type": "string",
+              "description": "Processor response message"
+            },
+            "avsResult": {
+              "type": "string",
+              "description": "Address verification result"
+            },
+            "cvvResult": {
+              "type": "string",
+              "description": "CVV verification result"
+            }
+          },
+          "description": "Payment processor response details"
+        }
+      },
+      "description": "Payment data"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "correlationId": {
+          "type": "string",
+          "description": "Correlation ID for tracing"
+        },
+        "source": {
+          "type": "string",
+          "description": "Event source service"
+        },
+        "version": {
+          "type": "string",
+          "description": "Event schema version"
+        }
+      },
+      "description": "Event metadata"
+    }
+  }
+}

@@ -30,7 +30,7 @@
 8. ✅ SEC-02 Gateway OIDC + JWT validation
 9. ✅ SEC-03 Per-service JWT validation
 10. ✅ SEC-04 Service scopes (`product:read`, `cart:manage`, `order:write`)
-11. ⏺ SEC-05 Rate limiting configuration (100 req/min per user, 1000 req/min per IP)
+11. ✅ SEC-05 Rate limiting configuration (100 req/min per user, 1000 req/min per IP)
 12. ⏺ SEC-06 CORS configuration for SPA domain
 13. ⏺ SEC-07 Input validation and sanitization
 14. ⏺ SEC-08 CORS policy implementation

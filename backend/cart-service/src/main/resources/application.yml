@@ -44,12 +44,20 @@ app:
         preferred-username: preferred_username
         email: email
         full-name: name
+        scope: scope
+        audience: aud
       roles:
         admin: ADMIN
         user: USER
       authorities:
         claim-name: realm_access.roles
         prefix: ROLE_
+      scopes:
+        product-read: "product:read"
+        cart-manage: "cart:manage"
+        order-write: "order:write"
+        payment-process: "payment:process"
+        admin-all: "admin:all"
     error:
       service-name: cart-service
       authentication:

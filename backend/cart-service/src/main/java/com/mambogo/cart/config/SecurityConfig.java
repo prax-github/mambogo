@@ -17,11 +17,14 @@ public class SecurityConfig {
 
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final JwtProperties jwtProperties;
 
     public SecurityConfig(CustomAuthenticationEntryPoint authenticationEntryPoint,
-                         CustomAccessDeniedHandler accessDeniedHandler) {
+                         CustomAccessDeniedHandler accessDeniedHandler,
+                         JwtProperties jwtProperties) {
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.accessDeniedHandler = accessDeniedHandler;
+        this.jwtProperties = jwtProperties;
     }
 
     @Bean
@@ -36,7 +39,7 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**").permitAll()
                 
                 // Cart endpoints (require USER role)
-                .requestMatchers("/api/cart/**").hasRole("USER")
+                .requestMatchers("/api/cart/**").hasRole(jwtProperties.getRoles().getUser())
                 
                 // Default: require authentication
                 .anyRequest().authenticated()
@@ -57,8 +60,8 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        grantedAuthoritiesConverter.setAuthoritiesClaimName("realm_access.roles");
-        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        grantedAuthoritiesConverter.setAuthoritiesClaimName(jwtProperties.getAuthorities().getClaimName());
+        grantedAuthoritiesConverter.setAuthorityPrefix(jwtProperties.getAuthorities().getPrefix());
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);

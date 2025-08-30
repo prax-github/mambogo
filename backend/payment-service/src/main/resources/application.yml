@@ -86,3 +86,20 @@ resilience4j:
 logging:
   level:
     io.github.resilience4j: INFO
+
+# Application-specific JWT Configuration
+app:
+  security:
+    jwt:
+      claims:
+        realm-access: realm_access
+        roles: roles
+        preferred-username: preferred_username
+        email: email
+        full-name: name
+      roles:
+        admin: ADMIN
+        user: USER
+      authorities:
+        claim-name: realm_access.roles
+        prefix: ROLE_

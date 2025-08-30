@@ -3,8 +3,8 @@
 **Task ID**: SEC-03  
 **Task Name**: Per-service JWT validation  
 **Date**: 2025-08-29  
-**Status**: ✅ COMPLETED  
-**Duration**: ~3 hours  
+**Status**: ✅ COMPLETED (Updated)  
+**Duration**: ~4 hours (including refactoring)  
 
 ---
 
@@ -274,6 +274,10 @@ return rolesList.stream()
 **Problem**: @PreAuthorize annotations not working
 **Resolution**: Added @EnableMethodSecurity to SecurityConfig
 
+### Issue 4: Hardcoded Values in Security Configuration
+**Problem**: JWT claims, roles, and error messages were hardcoded in Java classes
+**Resolution**: Created `JwtProperties` and `ErrorProperties` configuration classes with externalized YAML configuration
+
 ---
 
 ## 📊 Performance Considerations
@@ -367,9 +371,12 @@ return rolesList.stream()
 ### Configuration Files
 - `backend/*/src/main/java/com/mambogo/*/config/SecurityConfig.java`
 - `backend/*/src/main/java/com/mambogo/*/config/JwtTokenExtractor.java`
+- `backend/*/src/main/java/com/mambogo/*/config/JwtProperties.java`
+- `backend/*/src/main/java/com/mambogo/*/config/ErrorProperties.java`
 - `backend/*/src/main/java/com/mambogo/*/config/CustomAuthenticationEntryPoint.java`
 - `backend/*/src/main/java/com/mambogo/*/config/CustomAccessDeniedHandler.java`
 - `backend/*/src/main/java/com/mambogo/*/controller/*Controller.java`
+- `backend/*/src/main/resources/application.yml`
 
 ---
 
@@ -384,6 +391,7 @@ The SEC-03 Per-service JWT validation task has been successfully completed. The 
 5. **Method-Level Security**: Fine-grained authorization control with @PreAuthorize annotations
 6. **Service-Specific Security**: Different security levels appropriate for each service's requirements
 7. **Performance Optimization**: Minimal overhead with efficient JWT validation
+8. **Externalized Configuration**: All hardcoded values moved to YAML configuration for better maintainability
 
 All microservices are now ready to handle authenticated requests with proper JWT validation and role-based authorization. The implementation is consistent across all services while allowing for service-specific security requirements.
 

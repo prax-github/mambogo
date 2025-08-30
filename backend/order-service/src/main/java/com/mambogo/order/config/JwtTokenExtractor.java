@@ -13,6 +13,12 @@ import java.util.Optional;
 @Component
 public class JwtTokenExtractor {
 
+    private final JwtProperties jwtProperties;
+
+    public JwtTokenExtractor(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+    }
+
     /**
      * Extract user ID from JWT token
      */
@@ -26,19 +32,19 @@ public class JwtTokenExtractor {
      */
     public Optional<String> getUsername() {
         return getJwt()
-                .map(jwt -> jwt.getClaimAsString("preferred_username"));
+                .map(jwt -> jwt.getClaimAsString(jwtProperties.getClaims().getPreferredUsername()));
     }
 
     /**
      * Extract user roles from JWT token
      */
-    // @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public List<String> getUserRoles() {
         return getJwt()
                 .map(jwt -> {
-                    Map<String, Object> realmAccess = jwt.getClaimAsMap("realm_access");
+                    Map<String, Object> realmAccess = jwt.getClaimAsMap(jwtProperties.getClaims().getRealmAccess());
                     if (realmAccess != null) {
-                        Object rolesObj = realmAccess.get("roles");
+                        Object rolesObj = realmAccess.get(jwtProperties.getClaims().getRoles());
                         if (rolesObj instanceof List) {
                             List<?> rolesList = (List<?>) rolesObj;
                             return rolesList.stream()
@@ -62,14 +68,14 @@ public class JwtTokenExtractor {
      * Check if user has admin role
      */
     public boolean isAdmin() {
-        return hasRole("ADMIN");
+        return hasRole(jwtProperties.getRoles().getAdmin());
     }
 
     /**
      * Check if user has user role
      */
     public boolean isUser() {
-        return hasRole("USER");
+        return hasRole(jwtProperties.getRoles().getUser());
     }
 
     /**
@@ -77,7 +83,7 @@ public class JwtTokenExtractor {
      */
     public Optional<String> getEmail() {
         return getJwt()
-                .map(jwt -> jwt.getClaimAsString("email"));
+                .map(jwt -> jwt.getClaimAsString(jwtProperties.getClaims().getEmail()));
     }
 
     /**
@@ -85,7 +91,7 @@ public class JwtTokenExtractor {
      */
     public Optional<String> getFullName() {
         return getJwt()
-                .map(jwt -> jwt.getClaimAsString("name"));
+                .map(jwt -> jwt.getClaimAsString(jwtProperties.getClaims().getFullName()));
     }
 
     /**

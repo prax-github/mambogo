@@ -106,3 +106,11 @@ app:
       authorities:
         claim-name: realm_access.roles
         prefix: ROLE_
+    error:
+      service-name: order-service
+      authentication:
+        code: AUTHENTICATION_FAILED
+        message: Authentication required
+      authorization:
+        code: ACCESS_DENIED
+        message: Insufficient permissions

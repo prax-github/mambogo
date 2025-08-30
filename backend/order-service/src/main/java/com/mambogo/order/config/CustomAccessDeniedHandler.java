@@ -18,6 +18,11 @@ import java.util.Map;
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ErrorProperties errorProperties;
+
+    public CustomAccessDeniedHandler(ErrorProperties errorProperties) {
+        this.errorProperties = errorProperties;
+    }
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
@@ -27,11 +32,11 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         
         Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("code", "ACCESS_DENIED");
-        errorResponse.put("message", "Insufficient permissions");
-        errorResponse.put("timestamp", Instant.now().toString());
-        errorResponse.put("path", request.getRequestURI());
-        errorResponse.put("service", "order-service");
+        errorResponse.put(ErrorResponseConstants.CODE, errorProperties.getAuthorization().getCode());
+        errorResponse.put(ErrorResponseConstants.MESSAGE, errorProperties.getAuthorization().getMessage());
+        errorResponse.put(ErrorResponseConstants.TIMESTAMP, Instant.now().toString());
+        errorResponse.put(ErrorResponseConstants.PATH, request.getRequestURI());
+        errorResponse.put(ErrorResponseConstants.SERVICE, errorProperties.getServiceName());
         
         objectMapper.writeValue(response.getOutputStream(), errorResponse);
     }

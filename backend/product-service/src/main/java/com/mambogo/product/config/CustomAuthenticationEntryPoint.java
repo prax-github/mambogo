@@ -32,11 +32,11 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         
         Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("code", errorProperties.getAuthentication().getCode());
-        errorResponse.put("message", errorProperties.getAuthentication().getMessage());
-        errorResponse.put("timestamp", Instant.now().toString());
-        errorResponse.put("path", request.getRequestURI());
-        errorResponse.put("service", errorProperties.getServiceName());
+        errorResponse.put(ErrorResponseConstants.CODE, errorProperties.getAuthentication().getCode());
+        errorResponse.put(ErrorResponseConstants.MESSAGE, errorProperties.getAuthentication().getMessage());
+        errorResponse.put(ErrorResponseConstants.TIMESTAMP, Instant.now().toString());
+        errorResponse.put(ErrorResponseConstants.PATH, request.getRequestURI());
+        errorResponse.put(ErrorResponseConstants.SERVICE, errorProperties.getServiceName());
         
         objectMapper.writeValue(response.getOutputStream(), errorResponse);
     }

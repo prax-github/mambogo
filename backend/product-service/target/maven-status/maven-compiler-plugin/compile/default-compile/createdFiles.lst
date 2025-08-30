@@ -1,2 +1,1 @@
-com\mambogo\product\ProductServiceApplication.class
-com\mambogo\product\config\SecurityConfig.class
+com\mambogo\product\config\WebClientConfig.class

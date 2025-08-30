@@ -1,2 +1,9 @@
+C:\prashant\dev\mambogo\backend\product-service\src\main\java\com\mambogo\product\config\CustomAuthenticationEntryPoint.java
+C:\prashant\dev\mambogo\backend\product-service\src\main\java\com\mambogo\product\config\JwtTokenExtractor.java
+C:\prashant\dev\mambogo\backend\product-service\src\main\java\com\mambogo\product\config\CustomAccessDeniedHandler.java
+C:\prashant\dev\mambogo\backend\product-service\src\main\java\com\mambogo\product\controller\ProductController.java
 C:\prashant\dev\mambogo\backend\product-service\src\main\java\com\mambogo\product\config\SecurityConfig.java
+C:\prashant\dev\mambogo\backend\product-service\src\main\java\com\mambogo\product\config\TracingConfig.java
+C:\prashant\dev\mambogo\backend\product-service\src\main\java\com\mambogo\product\client\ExternalInventoryClient.java
 C:\prashant\dev\mambogo\backend\product-service\src\main\java\com\mambogo\product\ProductServiceApplication.java
+C:\prashant\dev\mambogo\backend\product-service\src\main\java\com\mambogo\product\config\WebClientConfig.java

@@ -1,8 +1,0 @@
-com\mambogo\gateway\config\SecurityConfig$CustomAuthenticationEntryPoint.class
-com\mambogo\gateway\GatewayServiceApplication.class
-com\mambogo\gateway\config\TracingConfig.class
-com\mambogo\gateway\filter\JwtPropagationFilter.class
-com\mambogo\gateway\config\GatewayConfig.class
-com\mambogo\gateway\config\SecurityConfig$CustomAccessDeniedHandler.class
-com\mambogo\gateway\config\SecurityConfig.class
-com\mambogo\gateway\config\JwtClaimsValidator.class

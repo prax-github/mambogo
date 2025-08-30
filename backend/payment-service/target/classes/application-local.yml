@@ -1,9 +1,0 @@
-DB_URL: jdbc:postgresql://localhost:5433/payments
-DB_USER: postgres
-DB_PASS: postgres
-KAFKA_BOOTSTRAP: localhost:29092
-ORDER_TOPIC: order-events
-PAYMENT_TOPIC: payment-events
-PAYMENT_DLQ: payment-events.DLQ
-KC_ISSUER: http://localhost:8081/realms/ecommerce
-ZIPKIN_ENDPOINT: http://localhost:9411/api/v2/spans

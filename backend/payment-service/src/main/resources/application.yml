@@ -86,3 +86,28 @@ resilience4j:
 logging:
   level:
     io.github.resilience4j: INFO
+
+# Application-specific JWT Configuration
+app:
+  security:
+    jwt:
+      claims:
+        realm-access: realm_access
+        roles: roles
+        preferred-username: preferred_username
+        email: email
+        full-name: name
+      roles:
+        admin: ADMIN
+        user: USER
+      authorities:
+        claim-name: realm_access.roles
+        prefix: ROLE_
+    error:
+      service-name: payment-service
+      authentication:
+        code: AUTHENTICATION_FAILED
+        message: Authentication required
+      authorization:
+        code: ACCESS_DENIED
+        message: Insufficient permissions

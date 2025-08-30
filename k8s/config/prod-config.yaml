@@ -34,3 +34,9 @@ data:
   outbox-enabled: "true"
   outbox-poll-interval-ms: "1000"
   outbox-batch-size: "100"
+  
+  # CORS Configuration for Production Environment
+  cors-enabled: "true"
+  cors-allowed-origins: "https://www.mambogo.com,https://mambogo.com"
+  cors-allow-credentials: "true"
+  cors-max-age: "7200"

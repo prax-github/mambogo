@@ -1,0 +1,66 @@
+# Production Environment Configuration
+PRODUCT_URL: ${PRODUCT_SERVICE_URL:http://product-service}
+CART_URL: ${CART_SERVICE_URL:http://cart-service}
+ORDER_URL: ${ORDER_SERVICE_URL:http://order-service}
+PAYMENT_URL: ${PAYMENT_SERVICE_URL:http://payment-service}
+KC_ISSUER: ${KC_ISSUER:https://auth.mambogo.com/realms/ecommerce}
+ZIPKIN_ENDPOINT: ${ZIPKIN_ENDPOINT:http://zipkin:9411/api/v2/spans}
+
+# CORS Configuration for Production Environment
+mambogo:
+  cors:
+    enabled: true
+    allowed-origins:
+      - "https://www.mambogo.com"    # Primary production domain
+      - "https://mambogo.com"        # Apex domain
+    allowed-methods:
+      - "GET"
+      - "POST" 
+      - "PUT"
+      - "DELETE"
+      - "OPTIONS"
+      - "PATCH"
+    allowed-headers:
+      - "Authorization"
+      - "Content-Type"
+      - "Accept"
+      - "Origin"
+      - "Access-Control-Request-Method"
+      - "Access-Control-Request-Headers"
+      - "X-Idempotency-Key"
+      - "X-Correlation-ID"
+    exposed-headers:
+      - "Access-Control-Allow-Origin"
+      - "Access-Control-Allow-Credentials"
+      - "X-Correlation-ID"
+      - "X-Rate-Limit-Remaining"
+      - "X-Rate-Limit-Retry-After-Seconds"
+    allow-credentials: true
+    max-age: 7200  # Longer cache for production (2 hours)
+
+# Production-specific security settings
+server:
+  port: 8080
+  
+spring:
+  profiles:
+    active: prod
+    
+# Disable detailed error messages in production
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: never
+      
+# Production logging
+logging:
+  level:
+    com.mambogo: INFO
+    org.springframework.security: WARN
+    org.springframework.web.cors: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

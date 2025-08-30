@@ -19,12 +19,22 @@ import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Map;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+    
+    private final CorsProperties corsProperties;
+
+    public SecurityConfig(CorsProperties corsProperties) {
+        this.corsProperties = corsProperties;
+    }
 
     @Bean
     @Order(1)
@@ -62,16 +72,65 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        if (!corsProperties.isEnabled()) {
+            logger.warn("CORS is disabled. This should only be used in specific environments.");
+            return exchange -> null;
+        }
+
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+        
+        // Set allowed origins from configuration
+        configuration.setAllowedOrigins(corsProperties.getAllowedOrigins());
+        logger.info("CORS configured with allowed origins: {}", corsProperties.getAllowedOrigins());
+        
+        // Set allowed methods
+        configuration.setAllowedMethods(corsProperties.getAllowedMethods());
+        
+        // Set allowed headers
+        configuration.setAllowedHeaders(corsProperties.getAllowedHeaders());
+        
+        // Set exposed headers
+        configuration.setExposedHeaders(corsProperties.getExposedHeaders());
+        
+        // Set credentials support
+        configuration.setAllowCredentials(corsProperties.isAllowCredentials());
+        
+        // Set max age for preflight cache
+        configuration.setMaxAge(corsProperties.getMaxAge());
+        
+        // Validate configuration
+        validateCorsConfiguration(configuration);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+        
+        logger.info("CORS configuration initialized successfully");
         return source;
+    }
+
+    /**
+     * Validates CORS configuration for security compliance.
+     */
+    private void validateCorsConfiguration(CorsConfiguration configuration) {
+        // Security validation: ensure no wildcard origins with credentials
+        Boolean allowCredentials = configuration.getAllowCredentials();
+        if (allowCredentials != null && allowCredentials.booleanValue()) {
+            List<String> allowedOrigins = configuration.getAllowedOrigins();
+            if (allowedOrigins != null) {
+                for (String origin : allowedOrigins) {
+                    if ("*".equals(origin)) {
+                        throw new IllegalArgumentException(
+                            "Cannot use wildcard origin '*' with allowCredentials=true. " +
+                            "This is a security vulnerability. Specify explicit origins.");
+                    }
+                }
+            }
+        }
+        
+        // Log security-relevant configuration
+        logger.info("CORS Security Validation - Allow Credentials: {}, Origins: {}", 
+                   allowCredentials, 
+                   configuration.getAllowedOrigins());
     }
 
     @Bean

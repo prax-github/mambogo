@@ -2,13 +2,16 @@ server:
   port: 8761
 
 spring:
-  application.name: eureka-server
+  application:
+    name: eureka-server
 
-# (We are not using Config Server for this module; keep it self-contained)
 eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
+  server:
+    wait-time-in-ms-when-sync-empty: 0
+    enable-self-preservation: false
 
 management:
   endpoints.web.exposure.include: health,info

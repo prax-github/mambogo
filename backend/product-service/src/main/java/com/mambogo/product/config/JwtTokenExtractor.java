@@ -38,7 +38,7 @@ public class JwtTokenExtractor {
     /**
      * Extract user roles from JWT token
      */
-    @SuppressWarnings("unchecked")
+    
     public List<String> getUserRoles() {
         return getJwt()
                 .map(jwt -> {

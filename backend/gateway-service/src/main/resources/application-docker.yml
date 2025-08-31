@@ -115,3 +115,62 @@ mambogo:
         - "'self'"
       upgrade-insecure-requests: true  # Enforce HTTPS in demo
       block-all-mixed-content: false  # More lenient for demo
+
+  # Input Sanitization Configuration for Demo Environment
+  gateway:
+    sanitization:
+      enabled: true
+      log-threats: true
+      block-suspicious-requests: true  # Enabled for demo security
+      max-violations-per-origin: 200  # Moderate limit for demo
+      violation-window-seconds: 3600
+      
+      # Performance settings for demo
+      max-request-body-size: 1048576  # 1MB for demo
+      max-parameter-value-length: 4096
+      max-parameter-count: 50
+      enable-async-processing: true
+      
+      # Threat detection settings (balanced for demo)
+      threat-detection:
+        enable-xss-detection: true
+        enable-sql-injection-detection: true
+        enable-path-traversal-detection: true
+        enable-command-injection-detection: true
+        enable-script-injection-detection: true
+        enable-data-exfiltration-detection: true
+        enable-anomaly-detection: true  # Enabled for demo
+        threat-score-threshold: 75  # Balanced threshold for demo
+        
+      # Endpoint-specific policies (balanced for demo)
+      endpoint-policies:
+        products:
+          policy-name: "demo-permissive"
+          sanitize-request-body: false
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: false
+        cart:
+          policy-name: "demo-moderate"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: false
+        orders:
+          policy-name: "demo-restrictive"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: true
+        payments:
+          policy-name: "demo-strict"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: true
+          
+      # Whitelist patterns for demo
+      whitelist-patterns:
+        - "/actuator/.*"
+        - "/api/csp/.*"
+        - "/api/health/.*"

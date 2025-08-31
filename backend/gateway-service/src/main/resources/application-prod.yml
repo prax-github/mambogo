@@ -134,6 +134,64 @@ mambogo:
       upgrade-insecure-requests: true  # Force HTTPS in production
       block-all-mixed-content: true  # Block mixed content in production
 
+  # Input Sanitization Configuration for Production Environment
+  gateway:
+    sanitization:
+      enabled: true
+      log-threats: true
+      block-suspicious-requests: true  # Strict blocking in production
+      max-violations-per-origin: 50  # Lower limit for production
+      violation-window-seconds: 3600
+      
+      # Performance settings for production
+      max-request-body-size: 524288  # 512KB for production
+      max-parameter-value-length: 2048
+      max-parameter-count: 30
+      enable-async-processing: true
+      
+      # Threat detection settings (strict for production)
+      threat-detection:
+        enable-xss-detection: true
+        enable-sql-injection-detection: true
+        enable-path-traversal-detection: true
+        enable-command-injection-detection: true
+        enable-script-injection-detection: true
+        enable-data-exfiltration-detection: true
+        enable-anomaly-detection: true  # Enabled for production
+        threat-score-threshold: 50  # Lower threshold for production
+        
+      # Endpoint-specific policies (strict for production)
+      endpoint-policies:
+        products:
+          policy-name: "production-permissive"
+          sanitize-request-body: false
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: false
+        cart:
+          policy-name: "production-moderate"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: true
+        orders:
+          policy-name: "production-restrictive"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: true
+        payments:
+          policy-name: "production-strict"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: true
+          
+      # Whitelist patterns for production (minimal)
+      whitelist-patterns:
+        - "/actuator/health"
+        - "/api/csp/violations"
+
 # Production-specific security settings
 server:
   port: 8080

@@ -36,6 +36,8 @@
 - ALWAYS use "implementation appears ready, let me verify..." or "let me run verification checks before confirming completion"
 - MUST run read_lints tool and verify compilation before any completion claims
 - MUST update todo_write with actual verification status, not assumptions
+- MUST complete MANDATORY COMPLETION CHECKLIST from .cursor/rules/completion-rules.mdc before claiming task completion
+- MUST create ALL standard deliverables (implementation log + interview guide) before updating roadmap status
 
 ### RULE 2: HONEST PROFESSIONAL COMMUNICATION
 - If you discover errors after claiming progress: IMMEDIATELY acknowledge them

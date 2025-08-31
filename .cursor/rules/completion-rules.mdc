@@ -1,0 +1,168 @@
+---
+description:
+# Task Completion Rules - Mandatory Verification Standards
+# Prevents premature completion claims and ensures all deliverables are complete
+
+## CRITICAL: NEVER Mark Task Complete Without Full Checklist Verification
+
+### MANDATORY COMPLETION CHECKLIST (Apply to ALL SEC Tasks)
+Before claiming ANY task as "complete" or updating roadmap status:
+
+#### 1. TODO List Verification (MANDATORY)
+- [ ] ALL TODO items marked as "completed" in todo_write
+- [ ] No "pending" or "in_progress" items remaining
+- [ ] Each TODO item has been individually verified
+- [ ] NEVER abandon TODO list due to context switching
+
+#### 2. Standard Deliverables Verification (MANDATORY)
+- [ ] Implementation log created and comprehensive
+- [ ] Interview guide created in "interview notes/" folder
+- [ ] All code changes verified with read_lints (zero warnings)
+- [ ] Integration testing completed and documented
+- [ ] Environment configurations updated (local, demo, prod)
+
+#### 3. Technical Verification (MANDATORY)
+- [ ] All modified files compile without errors or warnings
+- [ ] All imports resolve correctly
+- [ ] No unused variables, methods, or imports
+- [ ] Spring context loads successfully (if applicable)
+- [ ] Basic functionality testing completed
+
+#### 4. Documentation Verification (MANDATORY)
+- [ ] Implementation log includes lessons learned
+- [ ] Interview guide covers technical deep-dive topics
+- [ ] Configuration examples provided
+- [ ] Testing documentation updated
+- [ ] Integration guide created or updated
+
+#### 5. Project Integration Verification (MANDATORY)
+- [ ] Changes integrate with existing architecture
+- [ ] No breaking changes to other services
+- [ ] Metrics collection working correctly
+- [ ] Security requirements met
+- [ ] Performance impact acceptable
+
+## COMPLETION WORKFLOW ENFORCEMENT
+
+### Step 1: Pre-Completion Check
+Before claiming completion:
+1. Run read_lints on all modified files
+2. Verify ALL TODO items completed
+3. Check standard deliverables exist
+4. Review integration points
+
+### Step 2: Systematic Verification
+Use this exact verification sequence:
+```
+1. todo_write status check - ALL items "completed"
+2. read_lints verification - zero warnings
+3. File existence check - interview guide, implementation log
+4. Integration test execution
+5. Documentation review
+```
+
+### Step 3: Completion Declaration
+ONLY after passing ALL checks above:
+- Update roadmap status to ✅ COMPLETED
+- Record completion in implementation log
+- Create summary of deliverables
+
+## CONTEXT SWITCHING PROTECTION
+
+### Rule: Complete Before Switch
+- NEVER abandon current deliverables due to user feedback
+- ALWAYS complete current TODO list before addressing new concerns
+- Acknowledge new concerns but finish current work first
+
+### Proper Response to Mid-Task Feedback:
+```
+"You're absolutely right about [feedback]. Let me complete the remaining 
+deliverables for [current task] first, then I'll address [feedback] to 
+prevent this pattern in the future."
+```
+
+### Context Switch Protocol:
+1. Acknowledge the feedback/concern
+2. Complete ALL pending deliverables from current task
+3. THEN address the new concern/feedback
+4. Update rules/processes as needed
+
+## ANTI-PATTERNS TO AVOID
+
+### ❌ NEVER Do These:
+- Mark task complete with pending TODO items
+- Skip interview guide creation for complex tasks
+- Update roadmap before completing verification checklist
+- Abandon current work due to new feedback
+- Claim completion based on "technical working" without full deliverables
+
+### ✅ ALWAYS Do These:
+- Complete systematic verification before any completion claims
+- Create ALL standard deliverables (implementation log + interview guide)
+- Finish TODO list completely
+- Address feedback AFTER completing current deliverables
+- Use verification language: "let me verify completion" not "task is complete"
+
+## ENFORCEMENT MECHANISMS
+
+### Automatic Triggers:
+- Before updating roadmap: run completion checklist
+- Before claiming "complete": verify TODO list status
+- Before context switching: complete current deliverables
+
+### Verification Tools:
+- Use read_lints for technical verification
+- Use todo_write for progress tracking
+- Use file existence checks for deliverables
+- Use systematic testing for integration
+
+### Quality Gates:
+- Zero linting warnings required
+- All TODO items completed required
+- Standard deliverables created required
+- Integration testing passed required
+
+## COMPLETION CRITERIA EXAMPLES
+
+### For SEC Tasks (Security):
+- [ ] Security implementation working
+- [ ] Configuration files updated
+- [ ] Security testing completed
+- [ ] Metrics collection implemented
+- [ ] Implementation log comprehensive
+- [ ] Interview guide covering security topics
+- [ ] Integration with existing security stack
+
+### For Infrastructure Tasks:
+- [ ] Infrastructure deployed successfully
+- [ ] Configuration management updated
+- [ ] Monitoring and alerting configured
+- [ ] Documentation comprehensive
+- [ ] Rollback procedures tested
+- [ ] Performance benchmarks met
+
+### For Feature Implementation:
+- [ ] Feature functionality complete
+- [ ] Unit tests written and passing
+- [ ] Integration tests passing
+- [ ] API documentation updated
+- [ ] Frontend integration tested
+- [ ] Error handling implemented
+
+## LESSONS LEARNED INTEGRATION
+
+### From SEC-09 Incident:
+- Interview guide creation is MANDATORY for complex tasks
+- TODO list abandonment due to feedback is PROHIBITED
+- Context switching without completion causes deliverable gaps
+- Premature completion claims violate professional standards
+
+### Prevention Strategies:
+- Use this checklist for EVERY task
+- Complete current work before addressing new concerns
+- Systematic verification prevents shortcuts
+- Standard deliverables ensure consistency
+
+globs:
+alwaysApply: true
+---

@@ -1,0 +1,120 @@
+---
+description:
+# Java Performance Rules - Optimization and Efficiency Best Practices
+
+## Memory Management and Garbage Collection
+- Prefer object reuse over creation in performance-critical code
+- Use StringBuilder for string concatenation in loops
+- Avoid creating wrapper objects unnecessarily - use primitives when possible
+- Use appropriate collection initial capacity to avoid resizing
+- Remove listeners and callbacks to prevent memory leaks
+- Use weak references for caches to allow garbage collection
+
+## Collection Performance
+- Choose appropriate collection types for your use case
+- Use ArrayList for indexed access, LinkedList for frequent insertions/deletions
+- Use HashMap for O(1) lookup, TreeMap for sorted data
+- Use HashSet for uniqueness checks, TreeSet for sorted unique elements
+- Prefer EnumSet and EnumMap for enum-based collections
+- Use ConcurrentHashMap instead of synchronized HashMap
+
+## String Handling Performance
+- Use StringBuilder or StringBuffer for multiple concatenations
+- Prefer StringBuilder over StringBuffer unless thread safety is needed
+- Use String.intern() judiciously for frequently used strings
+- Avoid unnecessary string conversions
+- Use character arrays for performance-critical string manipulation
+- Cache computed string values when expensive to calculate
+
+## Loop and Iteration Optimization
+- Use enhanced for-loops (for-each) for collections when index isn't needed
+- Cache collection size in loops: `for (int i = 0, size = list.size(); i < size; i++)`
+- Avoid method calls in loop conditions
+- Use iterators for large collections when possible
+- Consider parallel streams for CPU-intensive operations on large datasets
+- Break out of loops early when possible
+
+## Method Call Optimization
+- Minimize method call overhead in performance-critical paths
+- Use static methods when instance state isn't needed
+- Consider method inlining for frequently called small methods
+- Avoid reflection in performance-critical code
+- Cache Method and Field objects when using reflection repeatedly
+- Use method handles (Java 7+) instead of reflection when possible
+
+## Object Creation and Initialization
+- Use object pooling for expensive objects in high-throughput scenarios
+- Lazy initialization for expensive operations
+- Use factory methods to control object creation
+- Consider flyweight pattern for objects with shared state
+- Avoid unnecessary object creation in loops
+- Reuse objects when thread-safe and appropriate
+
+## I/O Performance Optimization
+- Use buffered streams for file I/O operations
+- Use NIO for high-performance I/O operations
+- Choose appropriate buffer sizes for your use case
+- Close resources properly to free system resources
+- Use memory-mapped files for large file processing
+- Consider asynchronous I/O for non-blocking operations
+
+## Database and JDBC Performance
+- Use connection pooling to avoid connection overhead
+- Use prepared statements to avoid SQL parsing overhead
+- Fetch only necessary columns and rows
+- Use batch operations for multiple similar operations
+- Configure appropriate fetch sizes for result sets
+- Use database-specific optimizations when available
+
+## Concurrency Performance
+- Use thread pools instead of creating threads manually
+- Choose appropriate executor service for your use case
+- Use concurrent collections instead of synchronized collections
+- Minimize synchronization scope and duration
+- Use atomic operations for simple concurrent updates
+- Avoid excessive context switching with too many threads
+
+## JVM Performance Tuning
+- Configure appropriate heap size (-Xms, -Xmx)
+- Choose appropriate garbage collector for your use case
+- Monitor GC logs to identify performance issues
+- Use JVM profiling tools to identify bottlenecks
+- Configure JIT compiler options when necessary
+- Use escape analysis and other JVM optimizations
+
+## Algorithm and Data Structure Selection
+- Choose algorithms with appropriate time complexity
+- Use binary search for sorted data
+- Use hash-based algorithms for fast lookups
+- Consider space-time tradeoffs
+- Use appropriate sorting algorithms for your data
+- Profile algorithms with realistic data sizes
+
+## Serialization Performance
+- Use efficient serialization frameworks (Protocol Buffers, Avro)
+- Implement Externalizable for custom serialization control
+- Avoid serializing unnecessary fields (use transient)
+- Consider binary formats over text formats for performance
+- Use serialization proxies for complex objects
+- Cache serialized objects when appropriate
+
+## Network Performance
+- Use connection pooling for HTTP clients
+- Configure appropriate timeouts and retry policies
+- Use compression for large payloads
+- Batch network requests when possible
+- Use asynchronous network operations for better throughput
+- Monitor network latency and adjust accordingly
+
+## Monitoring and Profiling
+- Use APM tools to monitor application performance
+- Profile applications regularly to identify bottlenecks
+- Monitor key performance indicators (response time, throughput)
+- Use JFR (Java Flight Recorder) for low-overhead profiling
+- Set up alerts for performance degradation
+- Measure performance impact of changes before deployment
+
+globs:
+- "**/*.java"
+alwaysApply: true
+---

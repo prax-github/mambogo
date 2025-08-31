@@ -40,3 +40,11 @@ data:
   cors-allowed-origins: "http://localhost:5173,http://localhost:3000,http://localhost:4173"
   cors-allow-credentials: "true"
   cors-max-age: "3600"
+  
+  # Advanced CORS Policy Configuration
+  cors-policy-enforcement-enabled: "true"
+  cors-policy-auto-block-enabled: "false"
+  cors-policy-require-user-agent: "false"
+  cors-policy-max-requests-per-minute: "200"
+  cors-policy-performance-monitoring-enabled: "true"
+  cors-policy-alert-notifications-enabled: "false"

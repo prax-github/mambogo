@@ -37,3 +37,20 @@ mambogo:
       - "X-Rate-Limit-Retry-After-Seconds"
     allow-credentials: true
     max-age: 3600
+    # Advanced CORS Policy Configuration for Demo Environment
+    policy:
+      enforcement-enabled: true
+      auto-block-enabled: true
+      auto-block-threshold: 15
+      require-user-agent: true
+      max-requests-per-minute: 150
+      compliance-validation-enabled: true
+      audit-logging-enabled: true
+      security-monitoring-enabled: true
+      performance-monitoring-enabled: true
+      performance-warning-threshold-ms: 75
+      performance-critical-threshold-ms: 150
+      alert-notifications-enabled: true
+      trusted-origins:
+        - "https://demo.mambogo.com"
+        - "http://localhost:5173"  # For development against demo backend

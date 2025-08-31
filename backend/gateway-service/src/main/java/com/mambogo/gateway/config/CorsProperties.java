@@ -1,7 +1,7 @@
 package com.mambogo.gateway.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+
 
 import java.util.List;
 
@@ -11,7 +11,6 @@ import java.util.List;
  * @author Prashant Sinha
  * @since SEC-06 Implementation
  */
-@Component
 @ConfigurationProperties(prefix = "mambogo.cors")
 public class CorsProperties {
 

@@ -1,0 +1,49 @@
+---
+description:
+# Spring Boot Implementation Rules - Based on SEC-08 Lessons Learned
+
+## Bean Configuration Prevention (Critical)
+- NEVER use both @Component AND @ConfigurationProperties on the same class
+- NEVER use both @Component AND @Bean method for the same type
+- Pattern: @ConfigurationProperties class WITHOUT @Component + @EnableConfigurationProperties + @Bean method
+- Before adding any @Autowired field: verify the target bean exists and no circular dependencies
+- Use constructor injection over field injection when possible
+
+## Spring Context Validation
+- For @ConfigurationProperties: Remove @Component annotation, use @EnableConfigurationProperties
+- Check for duplicate bean names using grep_search before adding new beans
+- Test bean creation with minimal Spring context rather than full @SpringBootTest
+- When Spring context fails to load: check for duplicate beans and circular dependencies first
+
+## Metrics Implementation Standards
+- Keep metrics simple: use basic counter.increment() and gauge.set() patterns  
+- Avoid complex Tags.of() usage - use simple recordMetric(origin, method, status) wrapper methods
+- Mock MeterRegistry in tests rather than creating complex test configurations
+- Name metrics following prometheus conventions: snake_case with descriptive prefixes
+
+## Testing Strategy (Prevent Integration Test Failures)
+- Start with lightweight tests: @ExtendWith(SpringExtension.class) instead of @SpringBootTest
+- Create @TestConfiguration classes for complex setups with mocked dependencies
+- Use @SpringBootTest only when absolutely necessary (full integration testing)
+- Mock external dependencies (JwtDecoder, ApplicationEventPublisher, etc.) in tests
+- Test one component at a time rather than full system integration
+
+## Configuration Management
+- Always read configuration files completely before modifying them
+- Verify YAML structure and nesting before making changes using read_file
+- Test configuration loading in isolation when possible
+- Keep environment-specific configurations consistent (local, docker, prod, k8s)
+- Use search_replace carefully after understanding current file structure
+
+## Spring Cloud Gateway Implementation
+- Extend AbstractGatewayFilterFactory for custom filters with proper constructor
+- Implement Ordered interface with appropriate precedence values
+- Use reactive patterns (Mono/Flux) correctly - avoid blocking operations
+- Test filters with MockServerHttpRequest/MockServerHttpResponse
+
+globs:
+- "**/*.java"
+- "**/*.yml"
+- "**/*.yaml"
+alwaysApply: true
+---

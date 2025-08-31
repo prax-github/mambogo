@@ -1,0 +1,225 @@
+---
+description:
+# Project Context and Documentation Rules - Ensuring Implementation Continuity
+
+## Mandatory Project Context Review Before Starting Any Task
+
+### CRITICAL: Always Review Project Documentation First
+- MUST read the Product Requirements Document (PRD) before starting any implementation
+- MUST review the E-commerce Microservices MVP — Execution Roadmap.md for project context
+- MUST examine all relevant implementation logs in "implementation log/" folder
+- MUST check interview notes in "interview notes/" folder for technical context
+- MUST understand how the new task fits into overall project architecture
+
+### Project Documentation Files to Review
+
+#### 1. Core Project Documents (MANDATORY)
+- **Product Requirements Document (PRD).md** - Business requirements and functional specifications
+- **E-commerce Microservices MVP — Execution Roadmap.md** - Project execution plan and milestones
+- **docs/RSL-01-IMPLEMENTATION-SUMMARY.md** - Overall implementation summary
+
+#### 2. Implementation History (MANDATORY)
+- **implementation log/*.md** - All previous implementation logs for context
+- Review logs in chronological order: SEC-01 through current
+- Understand patterns, decisions, and lessons learned from previous implementations
+- Identify reusable components and established patterns
+
+#### 3. Technical Context (MANDATORY)
+- **interview notes/*.md** - Technical deep-dive materials and architectural decisions
+- **docs/contracts/*.yaml** - API contracts and service specifications
+- **k8s/README.md** - Kubernetes deployment and infrastructure context
+
+#### 4. Configuration Context (WHEN APPLICABLE)
+- **infra/docker-compose.yml** - Local development environment setup
+- **k8s/config/*.yaml** - Environment-specific configurations
+- **backend/*/pom.xml** - Service dependencies and versions
+
+### Pre-Implementation Context Analysis Protocol
+
+#### Step 1: Business Context Understanding
+```markdown
+Before starting any task, answer these questions:
+1. What business problem does this task solve?
+2. How does this task relate to overall project goals?
+3. What are the acceptance criteria and success metrics?
+4. Are there any business constraints or requirements?
+5. What is the priority and timeline for this task?
+```
+
+#### Step 2: Technical Context Assessment
+```markdown
+Analyze existing implementation:
+1. What services/components already exist?
+2. What patterns and architectures are established?
+3. What dependencies and integrations are in place?
+4. What testing strategies are being used?
+5. What deployment and configuration patterns exist?
+```
+
+#### Step 3: Implementation History Review
+```markdown
+Review previous implementations for:
+1. Similar features or components implemented before
+2. Architectural decisions and their rationale
+3. Patterns that worked well vs. patterns that caused issues
+4. Common pitfalls and how they were resolved
+5. Reusable code, configurations, or approaches
+```
+
+#### Step 4: Integration Point Analysis
+```markdown
+Understand integration requirements:
+1. Which existing services will this task interact with?
+2. What APIs, events, or data contracts are involved?
+3. What security, authentication, or authorization is needed?
+4. What monitoring, logging, or observability is required?
+5. What deployment and configuration updates are needed?
+```
+
+### Implementation Planning Based on Context
+
+#### Leverage Existing Patterns
+- Use established naming conventions from previous implementations
+- Follow existing project structure and organization patterns
+- Reuse configuration templates and deployment strategies
+- Apply consistent testing approaches from previous tasks
+- Maintain consistency with existing API designs and contracts
+
+#### Build Upon Previous Work
+- Extend existing services rather than creating new ones when appropriate
+- Reuse established utility classes, constants, and helper methods
+- Follow existing security patterns and authentication flows
+- Use established monitoring and logging patterns
+- Build upon existing database schemas and data models
+
+#### Learn from Previous Lessons
+- Review implementation logs for lessons learned and best practices
+- Avoid repeating mistakes or anti-patterns from previous tasks
+- Apply successful patterns and approaches from similar implementations
+- Use proven troubleshooting and debugging techniques
+- Follow established quality gates and verification procedures
+
+### Documentation Update Requirements
+
+#### During Implementation
+- Reference relevant PRD sections in implementation decisions
+- Note how implementation aligns with roadmap milestones
+- Document any deviations or changes from original plans
+- Cross-reference with previous implementation logs
+
+#### After Implementation
+- Update implementation log with references to PRD requirements fulfilled
+- Note how implementation advances overall roadmap progress
+- Document lessons learned for future implementations
+- Update any relevant project documentation or specifications
+
+### Quality Gates Based on Project Context
+
+#### Consistency Verification
+- Verify implementation follows established project patterns
+- Ensure configuration is consistent with other services
+- Validate that testing approach matches project standards
+- Confirm deployment process aligns with existing procedures
+
+#### Integration Verification
+- Test integration with existing services and components
+- Verify compatibility with established API contracts
+- Ensure security implementation aligns with project security model
+- Validate monitoring and observability integration
+
+#### Business Requirements Verification
+- Confirm implementation meets PRD requirements
+- Validate against roadmap milestones and deliverables
+- Ensure acceptance criteria are met
+- Verify business logic aligns with documented requirements
+
+### Tool Usage for Context Review
+
+#### Before Implementation Planning
+```bash
+# Always start with these tool calls:
+1. read_file("Product Requirements Document (PRD).md")
+2. read_file("E-commerce Microservices MVP — Execution Roadmap.md")
+3. list_dir("implementation log/") # Review all previous logs
+4. list_dir("interview notes/") # Check technical context
+5. codebase_search to understand existing architecture
+```
+
+#### During Implementation Planning
+```bash
+# Use these tools for detailed context:
+1. grep_search for similar implementations or patterns
+2. read_file for relevant previous implementation logs
+3. codebase_search for existing components to extend or integrate with
+4. read_file for relevant configuration and deployment files
+```
+
+#### Context Documentation in Implementation
+```markdown
+# Always include in implementation logs:
+## Project Context
+- PRD sections addressed: [list relevant sections]
+- Roadmap milestone: [current milestone and progress]
+- Related previous implementations: [list SEC-XX references]
+- Integration points: [existing services/components used]
+- Patterns followed: [established project patterns applied]
+```
+
+### Memory Management for Project Context
+
+#### Update Project Memory
+- Use update_memory tool when learning new project context
+- Document architectural decisions and their rationale
+- Record successful patterns for future reference
+- Note any changes to project requirements or scope
+
+#### Reference Project Memory
+- Check existing memories for relevant project context
+- Apply lessons learned from previous implementations
+- Maintain consistency with established project patterns
+- Build upon documented architectural decisions
+
+### Context-Aware Communication
+
+#### Progress Reporting
+- Always reference how work advances roadmap milestones
+- Connect implementation decisions to PRD requirements
+- Explain how work builds upon or extends previous implementations
+- Provide context for any deviations from established patterns
+
+#### Issue Reporting
+- Reference relevant project documentation when reporting issues
+- Explain impact on roadmap timeline and milestones
+- Connect issues to broader project context and dependencies
+- Provide context for priority and urgency of fixes
+
+## Implementation Template with Project Context
+
+```markdown
+## Task: [TASK-NAME]
+
+### Project Context Review
+□ PRD sections reviewed: [list relevant sections]
+□ Roadmap milestone: [current milestone]
+□ Related implementations: [previous SEC-XX tasks]
+□ Existing patterns identified: [patterns to follow]
+□ Integration points: [services/components to integrate with]
+
+### Implementation Plan
+□ Building upon: [existing components/services]
+□ Following patterns: [established project patterns]
+□ Configuration approach: [consistent with existing]
+□ Testing strategy: [aligned with project standards]
+□ Deployment approach: [following established procedures]
+
+### Context-Aware Implementation
+□ PRD requirements addressed
+□ Roadmap progress advanced
+□ Existing patterns followed
+□ Integration points verified
+□ Quality gates from previous lessons applied
+```
+
+globs:
+alwaysApply: true
+---

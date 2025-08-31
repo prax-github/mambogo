@@ -1,6 +1,11 @@
 package com.mambogo.gateway.filter;
 
 import com.mambogo.gateway.config.CorsProperties;
+import com.mambogo.gateway.metrics.SimpleCorsMetricsCollector;
+import com.mambogo.gateway.monitoring.CorsPerformanceMonitor;
+import com.mambogo.gateway.security.CorsSecurityMonitor;
+import com.mambogo.gateway.audit.CorsAuditLogger;
+import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -33,6 +38,10 @@ public class CorsSecurityFilter implements GlobalFilter, Ordered {
     private static final Logger logger = LoggerFactory.getLogger(CorsSecurityFilter.class);
     
     private final CorsProperties corsProperties;
+    private final SimpleCorsMetricsCollector metricsCollector;
+    private final CorsPerformanceMonitor performanceMonitor;
+    private final CorsSecurityMonitor securityMonitor;
+    private final CorsAuditLogger auditLogger;
     
     // Suspicious patterns that might indicate CORS attacks
     private static final Set<String> SUSPICIOUS_ORIGINS = Set.of(
@@ -45,8 +54,16 @@ public class CorsSecurityFilter implements GlobalFilter, Ordered {
         "moz-extension:"
     );
 
-    public CorsSecurityFilter(CorsProperties corsProperties) {
+    public CorsSecurityFilter(CorsProperties corsProperties,
+                               SimpleCorsMetricsCollector metricsCollector,
+                               CorsPerformanceMonitor performanceMonitor,
+                               CorsSecurityMonitor securityMonitor,
+                               CorsAuditLogger auditLogger) {
         this.corsProperties = corsProperties;
+        this.metricsCollector = metricsCollector;
+        this.performanceMonitor = performanceMonitor;
+        this.securityMonitor = securityMonitor;
+        this.auditLogger = auditLogger;
     }
 
     @Override
@@ -57,39 +74,64 @@ public class CorsSecurityFilter implements GlobalFilter, Ordered {
         String origin = request.getHeaders().getOrigin();
         String method = request.getMethod() != null ? request.getMethod().name() : "UNKNOWN";
         String path = request.getPath().value();
+        String userAgent = request.getHeaders().getFirst("User-Agent");
+        String clientIP = getClientIP(request);
         
-        // Log CORS requests for security monitoring
-        if (origin != null) {
-            logger.debug("CORS request - Origin: {}, Method: {}, Path: {}", origin, method, path);
-            
-            // Check for suspicious origins
-            if (isSuspiciousOrigin(origin)) {
-                logger.warn("SUSPICIOUS CORS REQUEST - Origin: {}, Method: {}, Path: {}, IP: {}", 
-                           origin, method, path, getClientIP(request));
+        // Start performance monitoring
+        long startTime = System.nanoTime();
+        
+        try {
+            // Log CORS requests for security monitoring
+            if (origin != null) {
+                logger.debug("CORS request - Origin: {}, Method: {}, Path: {}", origin, method, path);
                 
-                // For high security environments, you might want to block these
-                // return handleSuspiciousRequest(exchange);
-            }
-            
-            // Validate origin against allowed origins
-            if (!isOriginAllowed(origin)) {
-                logger.warn("BLOCKED CORS REQUEST - Unauthorized origin: {}, Method: {}, Path: {}, IP: {}", 
-                           origin, method, path, getClientIP(request));
+                // Record metrics
+                metricsCollector.recordCorsRequest(origin, method, "processing");
                 
-                // Could optionally block here, but Spring Security CORS will handle it
-                // return handleUnauthorizedOrigin(exchange);
+                // Check for suspicious origins
+                if (isSuspiciousOrigin(origin)) {
+                    logger.warn("SUSPICIOUS CORS REQUEST - Origin: {}, Method: {}, Path: {}, IP: {}", 
+                               origin, method, path, clientIP);
+                    
+                    metricsCollector.recordSuspiciousOrigin(origin, "pattern_match");
+                    auditLogger.logSecurityViolation(origin, "suspicious_origin", "medium", 
+                        "Origin matches suspicious pattern", "logged");
+                }
+                
+                // Perform security monitoring
+                securityMonitor.monitorRequest(origin, method, path, userAgent, clientIP);
+                
+                // Validate origin against allowed origins
+                if (!isOriginAllowed(origin)) {
+                    logger.warn("BLOCKED CORS REQUEST - Unauthorized origin: {}, Method: {}, Path: {}, IP: {}", 
+                               origin, method, path, clientIP);
+                    
+                    metricsCollector.recordBlockedRequest(origin, "origin_not_allowed", method);
+                    securityMonitor.monitorBlockedRequest(origin, "origin_not_allowed", method, path, clientIP);
+                    auditLogger.logCorsRequest(origin, method, path, userAgent, clientIP, "BLOCKED", "Origin not allowed");
+                } else {
+                    auditLogger.logCorsRequest(origin, method, path, userAgent, clientIP, "ALLOWED", "Origin validated");
+                }
+                
+                // Log preflight requests
+                if (HttpMethod.OPTIONS.equals(request.getMethod())) {
+                    logger.debug("CORS preflight request from origin: {}", origin);
+                    metricsCollector.recordPreflightRequest(origin, method);
+                    performanceMonitor.recordPreflightCacheHit(origin); // Simplified - would need actual cache check
+                }
             }
             
-            // Log preflight requests
-            if (HttpMethod.OPTIONS.equals(request.getMethod())) {
-                logger.debug("CORS preflight request from origin: {}", origin);
-            }
+            // Add security headers
+            addSecurityHeaders(response);
+            
+            return chain.filter(exchange);
+            
+        } finally {
+            // Complete performance monitoring
+            long endTime = System.nanoTime();
+            java.time.Duration validationTime = java.time.Duration.ofNanos(endTime - startTime);
+            performanceMonitor.recordValidationTime(origin, validationTime);
         }
-        
-        // Add security headers
-        addSecurityHeaders(response);
-        
-        return chain.filter(exchange);
     }
 
     /**

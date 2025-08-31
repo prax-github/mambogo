@@ -70,6 +70,70 @@ mambogo:
         - ".*localhost.*"  # Block localhost in production
         - ".*\.local.*"    # Block .local domains in production
 
+  # CSP Policy Configuration for Production
+  csp:
+    enabled: true
+    report-only: false
+    violation-reporting-enabled: true
+    report-uri: "/api/csp/violations"
+    max-violations-per-origin: 50  # Stricter limit for production
+    nonce-enabled: true
+    hash-enabled: true  # Enable hash validation in production
+    metrics-enabled: true
+    performance-monitoring-enabled: true
+    
+    directives:
+      default-src:
+        - "'self'"
+      script-src:
+        - "'self'"
+        # No 'unsafe-inline' in production for better security
+      style-src:
+        - "'self'"
+        - "fonts.googleapis.com"
+        # Limited unsafe-inline for critical styles only
+        - "'unsafe-inline'"
+      img-src:
+        - "'self'"
+        - "data:"
+        - "https:"
+        - "https://www.mambogo.com"
+        - "https://mambogo.com"
+      connect-src:
+        - "'self'"
+        - "https://www.mambogo.com"
+        - "https://mambogo.com"
+        - "https://api.mambogo.com"  # Production API domain
+      font-src:
+        - "'self'"
+        - "fonts.gstatic.com"
+        - "fonts.googleapis.com"
+        - "data:"
+      object-src:
+        - "'none'"
+      media-src:
+        - "'self'"
+        - "https://www.mambogo.com"
+        - "https://mambogo.com"
+      child-src:
+        - "'none'"  # Stricter in production
+      frame-src:
+        - "'none'"  # Stricter in production
+      frame-ancestors:
+        - "'none'"
+      form-action:
+        - "'self'"
+        - "https://www.mambogo.com"
+        - "https://mambogo.com"
+      base-uri:
+        - "'self'"
+      manifest-src:
+        - "'self'"
+      worker-src:
+        - "'self'"
+      upgrade-insecure-requests: true  # Force HTTPS in production
+      block-all-mixed-content: true  # Block mixed content in production
+
 # Production-specific security settings
 server:
   port: 8080

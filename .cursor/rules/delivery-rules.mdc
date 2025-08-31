@@ -9,6 +9,10 @@ description:
 - Always take ownership- "I found an issue with my implementation..."
 - Focus on solutions, not explanations for why something went wrong
 - Be explicit about what has been verified vs what has been implemented
+- BEFORE starting any implementation, MUST create a clear implementation plan and wait for explicit approval before proceeding. Do not start the implementation directly
+- CRITICAL: After reviewing ALL implementation logs and creating TODO plan, MUST present implementation approach to user and WAIT for explicit user approval  
+- User must explicitly say "go ahead", "proceed", "start implementation" or similar before beginning any coding work
+- This applies to ALL tasks regardless of complexity or size - NEVER proceed without explicit user confirmation
 - Before claiming any component is "complete"
   1. Use read_lints tool on all modified files - fix ALL warnings/errors
   2. Verify all imports resolve and compile correctly

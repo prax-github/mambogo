@@ -16,10 +16,20 @@
 ### RULE 0: PROJECT CONTEXT REVIEW (MANDATORY BEFORE ANY TASK)
 - MUST read Product Requirements Document (PRD).md before starting any implementation
 - MUST review E-commerce Microservices MVP — Execution Roadmap.md for project context
-- MUST examine relevant implementation logs in "implementation log/" folder
+- MUST examine ALL implementation logs in "implementation log/" folder using glob_file_search
+- MUST read ALL implementation logs to understand complete implementation patterns and lessons learned
 - MUST check interview notes in "interview notes/" folder for technical context
 - MUST understand how new task fits into overall project architecture
 - MUST use read_file tool to review these documents before creating implementation plan
+
+### RULE 0.5: USER APPROVAL REQUIRED BEFORE IMPLEMENTATION (CRITICAL)
+- After completing project context review and creating implementation plan with TODO items
+- MUST present the complete implementation approach and TODO list to user
+- MUST WAIT for explicit user approval before starting ANY implementation work
+- NEVER proceed directly from planning to implementation without user confirmation
+- User must explicitly say "go ahead", "proceed", "start implementation" or similar
+- This applies to ALL tasks regardless of complexity or size
+- STOP and wait for user approval - do not continue with implementation
 
 ### RULE 1: VERIFICATION BEFORE COMPLETION CLAIMS
 - NEVER use phrases like "implementation is complete", "task is done", "ready for deployment", or "SEC-X is finished" without systematic verification
@@ -89,10 +99,12 @@ Before claiming any component is "complete":
 
 ### Before Starting Any Implementation
 - Read and understand complete requirements
+- Use glob_file_search to find ALL implementation logs and read each one completely
 - Use codebase_search to understand existing architecture and patterns  
 - Use grep_search to find similar implementations to avoid duplication
 - Create implementation plan with verification checkpoints using todo_write
 - Define "done" criteria explicitly with measurable verification steps
+- Present implementation plan to user and WAIT for explicit approval before proceeding
 
 ### During Implementation
 - Update todo_write frequently with "in_progress" and "completed" status
@@ -180,16 +192,18 @@ Before claiming ANY component is complete:
 ## 🎯 STANDARD IMPLEMENTATION WORKFLOW
 
 ### For New Feature Implementation:
-1. Create TODO list using todo_write with specific, verifiable tasks
-2. Use codebase_search to understand existing patterns
-3. Implement one component at a time
-4. Verify compilation with read_lints after each component
-5. Add minimal test for each component
-6. Check integration with existing code
-7. Update configuration files carefully using read_file first
-8. Verify all linting passes with read_lints
-9. Update TODO progress with todo_write
-10. Only then claim component "ready for review"
+1. Complete RULE 0 project context review (including ALL implementation logs)
+2. Create TODO list using todo_write with specific, verifiable tasks
+3. Present implementation plan and WAIT for user approval
+4. ONLY AFTER USER APPROVAL: Use codebase_search to understand existing patterns
+5. Implement one component at a time
+6. Verify compilation with read_lints after each component
+7. Add minimal test for each component
+8. Check integration with existing code
+9. Update configuration files carefully using read_file first
+10. Verify all linting passes with read_lints
+11. Update TODO progress with todo_write
+12. Only then claim component "ready for review"
 
 ### For Spring Boot Components:
 1. Design bean dependencies first - avoid circular references

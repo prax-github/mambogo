@@ -54,3 +54,64 @@ mambogo:
       trusted-origins:
         - "https://demo.mambogo.com"
         - "http://localhost:5173"  # For development against demo backend
+
+  # CSP Policy Configuration for Demo Environment
+  csp:
+    enabled: true
+    report-only: false
+    violation-reporting-enabled: true
+    report-uri: "/api/csp/violations"
+    max-violations-per-origin: 200  # Moderate limit for demo
+    nonce-enabled: true
+    hash-enabled: false  # Disabled for demo flexibility
+    metrics-enabled: true
+    performance-monitoring-enabled: true
+    
+    directives:
+      default-src:
+        - "'self'"
+      script-src:
+        - "'self'"
+        - "'unsafe-inline'"  # Some flexibility for demo
+        - "https://demo.mambogo.com"
+      style-src:
+        - "'self'"
+        - "'unsafe-inline'"  # Flexibility for demo styling
+        - "fonts.googleapis.com"
+        - "https://demo.mambogo.com"
+      img-src:
+        - "'self'"
+        - "data:"
+        - "https:"
+        - "https://demo.mambogo.com"
+      connect-src:
+        - "'self'"
+        - "https://demo.mambogo.com"
+        - "http://localhost:5173"  # For local development
+      font-src:
+        - "'self'"
+        - "fonts.gstatic.com"
+        - "fonts.googleapis.com"
+        - "data:"
+      object-src:
+        - "'none'"
+      media-src:
+        - "'self'"
+        - "https://demo.mambogo.com"
+      child-src:
+        - "'self'"
+      frame-src:
+        - "'self'"
+      frame-ancestors:
+        - "'none'"
+      form-action:
+        - "'self'"
+        - "https://demo.mambogo.com"
+      base-uri:
+        - "'self'"
+      manifest-src:
+        - "'self'"
+      worker-src:
+        - "'self'"
+      upgrade-insecure-requests: true  # Enforce HTTPS in demo
+      block-all-mixed-content: false  # More lenient for demo

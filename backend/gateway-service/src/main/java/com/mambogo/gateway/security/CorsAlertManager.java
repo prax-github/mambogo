@@ -318,7 +318,6 @@ public class CorsAlertManager {
      * Alert tracking per origin.
      */
     private static class AlertTracker {
-        private final String origin;
         private final AtomicInteger totalAlerts = new AtomicInteger(0);
         private final AtomicInteger criticalAlerts = new AtomicInteger(0);
         private final ConcurrentHashMap<String, AtomicInteger> alertsBySeverity = new ConcurrentHashMap<>();
@@ -326,7 +325,6 @@ public class CorsAlertManager {
         private volatile Instant lastCriticalAlert = null;
 
         public AlertTracker(String origin) {
-            this.origin = origin;
         }
 
         public boolean shouldSuppressAlert(String severity) {

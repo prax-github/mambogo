@@ -4,10 +4,21 @@ description:
 
 ## Before Starting Any Implementation
 - Read and understand complete requirements
+- Use glob_file_search to find ALL implementation logs and read each one completely
 - Use codebase_search to understand existing architecture and patterns  
 - Use grep_search to find similar implementations to avoid duplication
 - Create implementation plan with verification checkpoints using todo_write
 - Define "done" criteria explicitly with measurable verification steps
+- Present implementation plan to user and WAIT for explicit user approval before proceeding
+
+## CRITICAL: User Approval Required Before Implementation
+- After completing project context review and creating implementation plan with TODO items
+- MUST present the complete implementation approach and TODO list to user
+- MUST WAIT for explicit user approval before starting ANY implementation work  
+- NEVER proceed directly from planning to implementation without user confirmation
+- User must explicitly say "go ahead", "proceed", "start implementation" or similar
+- This applies to ALL tasks regardless of complexity or size
+- STOP and wait for user approval - do not continue with implementation
 
 ## During Implementation
 - Update todo_write frequently with "in_progress" and "completed" status

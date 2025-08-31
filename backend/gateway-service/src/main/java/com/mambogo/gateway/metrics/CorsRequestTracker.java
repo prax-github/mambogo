@@ -374,15 +374,13 @@ public class CorsRequestTracker {
         }
 
         private static class BlockedEvent {
-            private final String reason;
             private final Instant timestamp;
 
             public BlockedEvent(String reason, Instant timestamp) {
-                this.reason = reason;
                 this.timestamp = timestamp;
             }
 
-            public String getReason() { return reason; }
+
             public Instant getTimestamp() { return timestamp; }
         }
     }

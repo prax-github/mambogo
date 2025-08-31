@@ -2,15 +2,22 @@ package com.mambogo.cart.controller;
 
 import com.mambogo.cart.config.JwtTokenExtractor;
 import com.mambogo.cart.config.ScopeValidator;
+import com.mambogo.cart.dto.AddToCartRequest;
+import com.mambogo.cart.dto.UpdateCartItemRequest;
+import com.mambogo.cart.validation.ValidUUID;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/cart")
+@Validated
 public class CartController {
 
     private final JwtTokenExtractor jwtTokenExtractor;
@@ -49,7 +56,8 @@ public class CartController {
      */
     @PostMapping("/items")
     @PreAuthorize("hasScope('cart:manage')")
-    public ResponseEntity<Map<String, Object>> addItemToCart(@RequestBody Map<String, Object> request) {
+    public ResponseEntity<Map<String, Object>> addItemToCart(
+            @Valid @RequestBody AddToCartRequest request) {
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Item added to cart successfully");
         response.put("userId", jwtTokenExtractor.getUserId().orElse("unknown"));
@@ -64,11 +72,13 @@ public class CartController {
      */
     @PutMapping("/items/{itemId}")
     @PreAuthorize("hasScope('cart:manage')")
-    public ResponseEntity<Map<String, Object>> updateCartItem(@PathVariable String itemId, @RequestBody Map<String, Object> request) {
+    public ResponseEntity<Map<String, Object>> updateCartItem(
+            @PathVariable @ValidUUID(allowNull = false, message = "Invalid item ID format") UUID itemId,
+            @Valid @RequestBody UpdateCartItemRequest request) {
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Cart item updated successfully");
         response.put("itemId", itemId);
-        response.put("newQuantity", request.get("quantity"));
+        response.put("newQuantity", request.getQuantity());
         response.put("updatedBy", jwtTokenExtractor.getUsername().orElse("unknown"));
         return ResponseEntity.ok(response);
     }
@@ -78,7 +88,8 @@ public class CartController {
      */
     @DeleteMapping("/items/{itemId}")
     @PreAuthorize("hasScope('cart:manage')")
-    public ResponseEntity<Map<String, Object>> removeCartItem(@PathVariable String itemId) {
+    public ResponseEntity<Map<String, Object>> removeCartItem(
+            @PathVariable @ValidUUID(allowNull = false, message = "Invalid item ID format") UUID itemId) {
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Item removed from cart successfully");
         response.put("itemId", itemId);

@@ -16,6 +16,10 @@ spring:
           deny-empty-key: false
           # Include response headers
           include-headers: true
+      # Global request size limits
+      httpclient:
+        max-header-size: 8KB
+        max-initial-line-length: 4KB
       routes:
         - id: product-service
           uri: lb://product-service
@@ -63,6 +67,9 @@ spring:
 
 server:
   port: 8080
+  # Request size limits at server level
+  max-http-header-size: 8KB
+  max-http-post-size: 1MB
 
 eureka:
   client:
@@ -87,9 +94,34 @@ management:
         spring.cloud.gateway.requests: 0.5,0.95,0.99
 management.zipkin.tracing.endpoint: ${ZIPKIN_ENDPOINT:http://localhost:9411/api/v2/spans}
 
-# Logging configuration for rate limiting
+# Gateway validation configuration
+gateway:
+  validation:
+    max-request-size: 1048576  # 1MB
+    max-header-size: 8192      # 8KB
+    max-headers-count: 50
+    max-query-params: 20
+    max-path-length: 2048
+    enable-security-validation: true
+    enable-content-type-validation: true
+    enable-size-validation: true
+    allowed-content-types:
+      - application/json
+      - application/x-www-form-urlencoded
+      - multipart/form-data
+      - text/plain
+    trusted-ip-ranges:
+      - 127.0.0.1
+      - ::1
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
+
+# Logging configuration for rate limiting and validation
 logging:
   level:
     com.mambogo.gateway.config: INFO
+    com.mambogo.gateway.filter: INFO
     org.springframework.cloud.gateway.filter.ratelimit: DEBUG
     org.springframework.data.redis: INFO
+    SECURITY: WARN

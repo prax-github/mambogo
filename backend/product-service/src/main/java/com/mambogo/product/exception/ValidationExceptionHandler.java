@@ -1,11 +1,13 @@
 package com.mambogo.product.exception;
 
 import com.mambogo.product.config.ErrorResponseConstants;
+import com.mambogo.product.util.SecurityAuditLogger;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -30,6 +32,9 @@ public class ValidationExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ValidationExceptionHandler.class);
     private static final Logger securityLogger = LoggerFactory.getLogger("SECURITY");
+    
+    @Autowired
+    private SecurityAuditLogger auditLogger;
 
     /**
      * Handle Bean Validation errors from @Valid annotations
@@ -39,6 +44,15 @@ public class ValidationExceptionHandler {
             MethodArgumentNotValidException ex, HttpServletRequest request) {
         
         logger.warn("Validation failed for request to {}: {}", request.getRequestURI(), ex.getMessage());
+        
+        // Audit log the validation failure
+        auditLogger.logValidationFailure(
+            "unknown", // User ID would come from JWT context
+            request.getRequestURI(),
+            "BEAN_VALIDATION",
+            ex.getMessage(),
+            getClientIpAddress(request)
+        );
         
         Map<String, Object> errorResponse = createBaseErrorResponse(
             ErrorResponseConstants.VALIDATION_ERROR,
@@ -132,6 +146,15 @@ public class ValidationExceptionHandler {
         // Log security event
         securityLogger.warn("Security validation failed for request to {} from IP {}: {}", 
             request.getRequestURI(), getClientIpAddress(request), ex.getMessage());
+            
+        // Audit log the security threat
+        auditLogger.logSecurityThreat(
+            "unknown", // User ID would come from JWT context
+            request.getRequestURI(),
+            ex.getThreatType() != null ? ex.getThreatType() : "UNKNOWN",
+            ex.getSuspiciousInput(),
+            getClientIpAddress(request)
+        );
         
         Map<String, Object> errorResponse = createBaseErrorResponse(
             ErrorResponseConstants.SECURITY_VALIDATION_ERROR,

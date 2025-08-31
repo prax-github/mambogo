@@ -1,6 +1,39 @@
+# Docker Compose Environment Configuration
 PRODUCT_URL: http://product-service:8082
 CART_URL: http://cart-service:8083
 ORDER_URL: http://order-service:8084
 PAYMENT_URL: http://payment-service:8085
 KC_ISSUER: http://keycloak:8080/realms/ecommerce
 ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+
+# CORS Configuration for Docker Compose (Demo Environment)
+mambogo:
+  cors:
+    enabled: true
+    allowed-origins:
+      - "https://demo.mambogo.com"
+      - "http://localhost:5173"  # For local development against Docker backend
+    allowed-methods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "DELETE"
+      - "OPTIONS"
+      - "PATCH"
+    allowed-headers:
+      - "Authorization"
+      - "Content-Type"
+      - "Accept"
+      - "Origin"
+      - "Access-Control-Request-Method"
+      - "Access-Control-Request-Headers"
+      - "X-Idempotency-Key"
+      - "X-Correlation-ID"
+    exposed-headers:
+      - "Access-Control-Allow-Origin"
+      - "Access-Control-Allow-Credentials"
+      - "X-Correlation-ID"
+      - "X-Rate-Limit-Remaining"
+      - "X-Rate-Limit-Retry-After-Seconds"
+    allow-credentials: true
+    max-age: 3600

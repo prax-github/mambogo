@@ -34,3 +34,9 @@ data:
   outbox-enabled: "true"
   outbox-poll-interval-ms: "1000"
   outbox-batch-size: "100"
+  
+  # CORS Configuration for Local Environment
+  cors-enabled: "true"
+  cors-allowed-origins: "http://localhost:5173,http://localhost:3000,http://localhost:4173"
+  cors-allow-credentials: "true"
+  cors-max-age: "3600"

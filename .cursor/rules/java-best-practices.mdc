@@ -1,0 +1,112 @@
+---
+description:
+# Java Best Practices - Advanced Java Development Patterns
+
+## Object-Oriented Programming
+- Favor composition over inheritance
+- Program to interfaces, not implementations
+- Use polymorphism to eliminate conditional logic
+- Apply SOLID principles consistently
+- Encapsulate what varies and separate what changes
+- Prefer immutable objects when possible
+
+## Design Patterns Implementation
+- Use Factory pattern for object creation when type depends on input
+- Apply Builder pattern for objects with many optional parameters
+- Use Strategy pattern to encapsulate algorithms
+- Apply Template Method for common workflow with varying steps
+- Use Observer pattern for event-driven architectures
+- Apply Singleton pattern judiciously (prefer dependency injection)
+
+## Effective Java Practices
+- Override equals() when you override hashCode() and vice versa
+- Always override toString() for better debugging
+- Implement Comparable if your class has natural ordering
+- Use enums instead of int constants
+- Minimize accessibility of classes and members
+- Use dependency injection instead of hardwired dependencies
+
+## Error Handling and Validation
+- Fail fast - validate input parameters early
+- Use specific exception types for different error conditions
+- Include all relevant information in exception messages
+- Don't catch and ignore exceptions without good reason
+- Use checked exceptions for recoverable errors
+- Use unchecked exceptions for programming errors
+
+## Memory Management and Performance
+- Avoid memory leaks by removing listeners and callbacks
+- Use weak references for cache implementations
+- Prefer primitive types over boxed primitives
+- Use string interning judiciously
+- Avoid creating unnecessary objects in loops
+- Use object pooling for expensive objects when appropriate
+
+## Code Documentation and Comments
+- Write self-documenting code with clear method and variable names
+- Use JavaDoc for public APIs
+- Comment the why, not the what
+- Keep comments up to date with code changes
+- Use TODO comments sparingly and track them
+- Document complex algorithms and business logic
+
+## Testing Best Practices
+- Write tests before or alongside production code
+- Use descriptive test method names
+- Follow AAA pattern: Arrange, Act, Assert
+- Test edge cases and error conditions
+- Use mocks judiciously - prefer real objects when possible
+- Keep tests independent and isolated
+
+## Logging Best Practices
+- Use appropriate log levels (ERROR, WARN, INFO, DEBUG, TRACE)
+- Include relevant context in log messages
+- Use parameterized logging to avoid string concatenation
+- Don't log sensitive information
+- Use structured logging for machine readability
+- Configure log rotation and retention policies
+
+## API Design Principles
+- Design APIs for clarity and ease of use
+- Use consistent naming conventions across APIs
+- Minimize the surface area of public APIs
+- Provide clear error messages and status codes
+- Version your APIs appropriately
+- Document API contracts thoroughly
+
+## Security Best Practices
+- Validate all input data
+- Use prepared statements to prevent SQL injection
+- Sanitize output to prevent XSS attacks
+- Don't store passwords in plain text
+- Use secure random number generators
+- Implement proper authentication and authorization
+
+## Configuration and Environment Management
+- Externalize configuration from code
+- Use environment-specific property files
+- Validate configuration at startup
+- Use type-safe configuration classes
+- Document all configuration options
+- Provide sensible defaults for optional settings
+
+## Database and Persistence Best Practices
+- Use connection pooling for database connections
+- Implement proper transaction management
+- Use batch operations for bulk data processing
+- Optimize queries and use appropriate indexes
+- Handle database connection failures gracefully
+- Use database migration tools for schema changes
+
+## Microservices and Distributed Systems
+- Design services around business capabilities
+- Implement circuit breakers for external service calls
+- Use asynchronous communication where appropriate
+- Implement proper health checks
+- Design for idempotency
+- Handle partial failures gracefully
+
+globs:
+- "**/*.java"
+alwaysApply: true
+---

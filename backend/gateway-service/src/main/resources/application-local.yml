@@ -38,3 +38,17 @@ mambogo:
       - "X-Rate-Limit-Retry-After-Seconds"
     allow-credentials: true
     max-age: 3600
+    # Advanced CORS Policy Configuration for Local Development
+    policy:
+      enforcement-enabled: true
+      auto-block-enabled: false  # Disabled for local development
+      auto-block-threshold: 20
+      require-user-agent: false  # Relaxed for development
+      max-requests-per-minute: 200  # Higher limit for development
+      compliance-validation-enabled: true
+      audit-logging-enabled: true
+      security-monitoring-enabled: true
+      performance-monitoring-enabled: true
+      performance-warning-threshold-ms: 100  # More relaxed for local
+      performance-critical-threshold-ms: 200
+      alert-notifications-enabled: false  # Disabled for local development

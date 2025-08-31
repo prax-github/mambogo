@@ -37,6 +37,38 @@ mambogo:
       - "X-Rate-Limit-Retry-After-Seconds"
     allow-credentials: true
     max-age: 7200  # Longer cache for production (2 hours)
+    # Advanced CORS Policy Configuration for Production
+    policy:
+      enforcement-enabled: true
+      auto-block-enabled: true
+      auto-block-threshold: 10
+      auto-block-duration-hours: 48  # Longer blocks in production
+      require-user-agent: true
+      max-requests-per-minute: 100
+      compliance-validation-enabled: true
+      compliance-check-interval-hours: 12  # More frequent compliance checks
+      audit-logging-enabled: true
+      audit-log-batch-size: 50  # Smaller batches for faster processing
+      audit-log-flush-interval-seconds: 15
+      security-monitoring-enabled: true
+      security-analysis-interval-minutes: 3  # More frequent security analysis
+      performance-monitoring-enabled: true
+      performance-warning-threshold-ms: 50
+      performance-critical-threshold-ms: 100
+      alert-notifications-enabled: true
+      alert-suppression-interval-minutes: 5  # Shorter suppression in production
+      incident-escalation-threshold: 3  # Lower threshold for production
+      trusted-origins:
+        - "https://www.mambogo.com"
+        - "https://mambogo.com"
+      suspicious-patterns:
+        - ".*javascript:.*"
+        - ".*data:.*"
+        - ".*file:.*"
+        - "null"
+        - "undefined"
+        - ".*localhost.*"  # Block localhost in production
+        - ".*\.local.*"    # Block .local domains in production
 
 # Production-specific security settings
 server:

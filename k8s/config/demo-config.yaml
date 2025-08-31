@@ -37,6 +37,15 @@ data:
   
   # CORS Configuration for Demo Environment
   cors-enabled: "true"
-  cors-allowed-origins: "https://demo.mambogo.com"
+  cors-allowed-origins: "https://demo.mambogo.com,http://localhost:5173"
   cors-allow-credentials: "true"
   cors-max-age: "3600"
+  
+  # Advanced CORS Policy Configuration
+  cors-policy-enforcement-enabled: "true"
+  cors-policy-auto-block-enabled: "true"
+  cors-policy-auto-block-threshold: "15"
+  cors-policy-require-user-agent: "true"
+  cors-policy-max-requests-per-minute: "150"
+  cors-policy-performance-monitoring-enabled: "true"
+  cors-policy-alert-notifications-enabled: "true"

@@ -33,7 +33,7 @@
 11. ✅ SEC-05 Rate limiting configuration (100 req/min per user, 1000 req/min per IP)
 12. ✅ SEC-06 CORS configuration for SPA domain
 13. ✅ SEC-07 Input validation and sanitization
-14. ⏺ SEC-08 CORS policy implementation
+14. ✅ SEC-08 CORS policy implementation
 15. ⏺ SEC-09 Content Security Policy headers
 16. ⏺ SEC-10 Rate limiting implementation
 17. ⏺ SEC-11 Input sanitization middleware

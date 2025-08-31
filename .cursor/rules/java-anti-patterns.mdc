@@ -1,0 +1,176 @@
+---
+description:
+# Java Anti-Patterns to Avoid - Common Mistakes and Code Smells
+
+## Object-Oriented Anti-Patterns
+
+### God Object / Large Class
+- AVOID: Classes with too many responsibilities (>500 lines typically)
+- AVOID: Classes that know about too many other classes
+- SOLUTION: Break into smaller, focused classes following Single Responsibility Principle
+- EXAMPLE: Don't create a UserManagerServiceControllerHelper class
+
+### Circular Dependencies
+- AVOID: Class A depends on Class B which depends on Class A
+- AVOID: Package cycles and circular imports
+- SOLUTION: Use dependency injection, interfaces, or refactor relationships
+- DETECTION: Use static analysis tools to detect cycles
+
+### Inappropriate Intimacy
+- AVOID: Classes that access each other's private members excessively
+- AVOID: Using reflection to access private fields unnecessarily
+- SOLUTION: Use proper encapsulation and public interfaces
+- REFACTOR: Extract common behavior into shared components
+
+## Method Design Anti-Patterns
+
+### Long Method
+- AVOID: Methods longer than 30-50 lines
+- AVOID: Methods that do multiple unrelated things
+- SOLUTION: Extract smaller, focused methods
+- TECHNIQUE: Use "Extract Method" refactoring
+
+### Long Parameter List
+- AVOID: Methods with more than 3-4 parameters
+- AVOID: Multiple boolean parameters that control behavior
+- SOLUTION: Use parameter objects, builder pattern, or configuration objects
+- EXAMPLE: `processOrder(Order order, ProcessingConfig config)` instead of `processOrder(String id, boolean validate, boolean notify, boolean save, double discount)`
+
+### Magic Numbers and Strings
+- AVOID: Hardcoded numbers and strings in business logic
+- AVOID: `if (status == 42)` or `if (type.equals("PREMIUM"))`
+- SOLUTION: Use named constants or enums
+- EXAMPLE: `if (status == OrderStatus.COMPLETED)` or `if (type == CustomerType.PREMIUM)`
+
+## Exception Handling Anti-Patterns
+
+### Catching Generic Exception
+- AVOID: `catch (Exception e)` when you can catch specific exceptions
+- AVOID: Empty catch blocks or ignoring exceptions
+- SOLUTION: Catch specific exception types and handle appropriately
+- LOGGING: Always log exceptions with meaningful context
+
+### Exception as Flow Control
+- AVOID: Using exceptions for normal program flow
+- AVOID: `try { return map.get(key); } catch (NullPointerException e) { return defaultValue; }`
+- SOLUTION: Use conditional logic or Optional for flow control
+- PERFORMANCE: Exceptions are expensive for normal flow
+
+### Checked Exception Abuse
+- AVOID: Using checked exceptions for programming errors
+- AVOID: Catching checked exceptions just to re-throw as unchecked
+- SOLUTION: Use checked exceptions only for recoverable conditions
+- DESIGN: Consider if the caller can meaningfully handle the exception
+
+## Collection and Data Structure Anti-Patterns
+
+### Raw Types
+- AVOID: Using collections without generics: `List list = new ArrayList();`
+- SOLUTION: Always use parameterized types: `List<String> list = new ArrayList<>();`
+- BENEFIT: Type safety and better IDE support
+
+### Inappropriate Collection Choice
+- AVOID: Using ArrayList when you need frequent insertions/deletions at beginning
+- AVOID: Using HashMap when you need sorted data
+- SOLUTION: Choose appropriate collection types for your use case
+- PERFORMANCE: Understand time complexity of operations
+
+### Collection Modification During Iteration
+- AVOID: Modifying collection while iterating: `for (String item : list) { list.remove(item); }`
+- SOLUTION: Use iterator.remove() or collect items to remove separately
+- EXCEPTION: This causes ConcurrentModificationException
+
+## String Handling Anti-Patterns
+
+### String Concatenation in Loops
+- AVOID: `String result = ""; for (String s : strings) { result += s; }`
+- SOLUTION: Use StringBuilder for multiple concatenations
+- PERFORMANCE: String concatenation creates new objects each time
+
+### Inappropriate String.equals() Usage
+- AVOID: `string.equals("constant")` which can cause NullPointerException
+- SOLUTION: Use `"constant".equals(string)` or `Objects.equals(string, "constant")`
+- SAFETY: Literal first prevents null pointer exceptions
+
+### String Comparison Anti-Patterns
+- AVOID: Using `==` for string content comparison
+- AVOID: Not handling null values in string operations
+- SOLUTION: Use equals() method and null-safe comparison utilities
+- EXAMPLE: Use Objects.equals() for null-safe comparison
+
+## Resource Management Anti-Patterns
+
+### Resource Leaks
+- AVOID: Not closing resources (files, connections, streams)
+- AVOID: Only closing resources in try block without finally
+- SOLUTION: Use try-with-resources for AutoCloseable resources
+- PATTERN: `try (FileInputStream fis = new FileInputStream(file)) { ... }`
+
+### Finalizer Usage
+- AVOID: Relying on finalize() for resource cleanup
+- AVOID: Implementing finalize() unless absolutely necessary
+- SOLUTION: Use try-with-resources and explicit resource management
+- DEPRECATION: finalize() is deprecated in Java 9+
+
+## Concurrency Anti-Patterns
+
+### Inappropriate Synchronization
+- AVOID: Synchronizing on mutable objects or strings
+- AVOID: Synchronizing entire methods when only part needs synchronization
+- SOLUTION: Synchronize on private final objects and minimize synchronized scope
+- EXAMPLE: `private final Object lock = new Object();`
+
+### Double-Checked Locking (when done incorrectly)
+- AVOID: Double-checked locking without volatile keyword
+- SOLUTION: Use volatile for the field or use other initialization patterns
+- MODERN: Consider using enum singleton or initialization-on-demand holder
+
+### Busy Waiting
+- AVOID: Using loops with Thread.sleep() for waiting
+- SOLUTION: Use proper synchronization primitives (wait/notify, CountDownLatch, etc.)
+- PATTERN: Use blocking queues, semaphores, or other concurrent utilities
+
+## Performance Anti-Patterns
+
+### Premature Optimization
+- AVOID: Optimizing code before measuring performance
+- AVOID: Making code complex for micro-optimizations
+- SOLUTION: Profile first, then optimize bottlenecks
+- PRINCIPLE: "Premature optimization is the root of all evil"
+
+### Inappropriate Data Structure Usage
+- AVOID: Using wrong data structure for the access pattern
+- EXAMPLE: Using ArrayList when you need fast random access AND frequent insertions
+- SOLUTION: Understand time complexity and choose appropriate structures
+- ANALYSIS: Measure with realistic data sizes
+
+### Creating Unnecessary Objects
+- AVOID: Creating objects in loops when reuse is possible
+- AVOID: Using wrapper classes when primitives suffice
+- SOLUTION: Reuse objects when safe, use primitives for performance-critical code
+- POOLING: Consider object pooling for expensive objects
+
+## Code Smell Anti-Patterns
+
+### Dead Code
+- AVOID: Leaving unused methods, fields, or classes in codebase
+- DETECTION: Use static analysis tools to find dead code
+- SOLUTION: Remove unused code regularly
+- MAINTENANCE: Dead code adds maintenance overhead
+
+### Duplicate Code
+- AVOID: Copy-pasting code instead of creating reusable methods
+- DETECTION: Use tools to detect code duplication
+- SOLUTION: Extract common functionality into methods or utility classes
+- PRINCIPLE: DRY (Don't Repeat Yourself)
+
+### Feature Envy
+- AVOID: Classes that use methods of other classes more than their own
+- SYMPTOM: Lots of method calls to other objects
+- SOLUTION: Move methods to the class that owns the data
+- REFACTORING: Use "Move Method" refactoring
+
+globs:
+- "**/*.java"
+alwaysApply: true
+---

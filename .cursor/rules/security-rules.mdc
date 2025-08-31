@@ -1,0 +1,77 @@
+---
+description:
+# Security Implementation Rules - Enterprise Security Standards
+
+## Security Architecture Principles
+- Apply defense in depth - multiple security layers
+- Validate all inputs at entry points
+- Use principle of least privilege for access control
+- Implement proper error handling without information leakage
+- Log security events for audit and monitoring
+
+## CORS Security Implementation
+- Never use wildcard (*) origins with credentials enabled
+- Validate all origins against allowed list
+- Implement proper preflight request handling
+- Log all CORS violations for security monitoring
+- Use HTTPS for all production origins
+
+## Input Validation & Sanitization
+- Validate all user inputs at the controller layer
+- Use @Valid annotation with proper validation constraints
+- Sanitize inputs to prevent injection attacks
+- Implement rate limiting for API endpoints
+- Validate file uploads for type and size
+
+## Authentication & Authorization
+- Never store sensitive data in plain text
+- Use proper session management
+- Implement JWT validation correctly
+- Check authorization at method level
+- Log authentication failures for monitoring
+
+## Data Protection
+- Encrypt sensitive data at rest and in transit
+- Use proper password hashing algorithms
+- Implement secure random number generation
+- Avoid logging sensitive information
+- Use environment variables for secrets
+
+## Security Headers
+- Implement proper CORS headers
+- Add security headers (X-Frame-Options, X-Content-Type-Options, etc.)
+- Use Content Security Policy (CSP)
+- Implement proper cache control headers
+- Add HSTS headers for HTTPS
+
+## Error Handling Security
+- Never expose stack traces to users
+- Implement consistent error responses
+- Log detailed errors server-side only
+- Use generic error messages for security-sensitive operations
+- Implement proper exception handling
+
+## Monitoring & Alerting
+- Log all security-relevant events
+- Implement real-time security monitoring
+- Set up alerts for suspicious activities
+- Monitor for common attack patterns
+- Implement audit trails for compliance
+
+## Dependencies & Updates
+- Keep all dependencies up to date
+- Scan for known vulnerabilities regularly
+- Use dependency management tools
+- Validate third-party libraries before use
+- Monitor security advisories
+
+globs:
+- "**/*.java"
+- "**/*.js"
+- "**/*.ts"
+- "**/*.jsx"
+- "**/*.tsx"
+- "**/*.yml"
+- "**/*.yaml"
+alwaysApply: true
+---

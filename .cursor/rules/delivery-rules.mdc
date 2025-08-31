@@ -1,0 +1,20 @@
+---
+description:
+- NEVER use phrases like "implementation is complete", "task is done", "ready for deployment", or "SEC-X is finished" without systematic verification
+- ALWAYS use "implementation appears ready, let me verify..." or "let me run verification checks before confirming completion"
+- MUST run read_lints tool and verify compilation before any completion claims
+- MUST update todo_write with actual verification status, not assumptions
+- If you discover errors after claiming progress- IMMEDIATELY acknowledge them
+- Never make excuses or defensive responses when issues are found
+- Always take ownership- "I found an issue with my implementation..."
+- Focus on solutions, not explanations for why something went wrong
+- Be explicit about what has been verified vs what has been implemented
+- Before claiming any component is "complete"
+  1. Use read_lints tool on all modified files - fix ALL warnings/errors
+  2. Verify all imports resolve and compile correctly
+  3. Check for Spring bean conflicts (no duplicate @Component + @ConfigurationProperties)
+  4. Create minimal test to verify basic functionality
+  5. Update todo_write with "completed" status only after verification
+globs:
+alwaysApply: true
+---

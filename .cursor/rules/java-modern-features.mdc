@@ -1,0 +1,112 @@
+---
+description:
+# Modern Java Features and Patterns - Java 8+ Best Practices
+
+## Lambda Expressions and Functional Programming
+- Use lambda expressions for functional interfaces
+- Prefer method references when they make code clearer: `String::valueOf`
+- Keep lambda expressions short and focused (1-3 lines)
+- Use lambda expressions instead of anonymous inner classes
+- Avoid lambda expressions that are too complex - extract to methods
+- Use standard functional interfaces: Predicate, Function, Consumer, Supplier
+
+## Stream API Best Practices
+- Use streams for data transformation and filtering
+- Prefer streams over traditional loops for complex data processing
+- Keep stream operations stateless and non-interfering
+- Use parallel streams judiciously - only when proven beneficial
+- Avoid side effects in stream operations
+- Use collectors for terminal operations: `Collectors.toList()`, `Collectors.groupingBy()`
+
+## Optional Usage Guidelines
+- Use Optional as return type for methods that may not return a value
+- Never use Optional for fields, method parameters, or collections
+- Don't use Optional.get() without checking if value is present
+- Use Optional.orElse(), Optional.orElseGet(), or Optional.orElseThrow()
+- Chain Optional methods for cleaner code: `optional.map().filter().orElse()`
+- Use Optional.empty() instead of returning null
+
+## Local Variable Type Inference (var)
+- Use var for local variables when type is obvious from right side
+- Don't use var when it makes code less readable
+- Never use var for method parameters or return types
+- Use var with generic types to reduce verbosity: `var list = new ArrayList<String>()`
+- Be careful with var and null assignments
+- Use meaningful variable names when using var
+
+## Switch Expressions (Java 14+)
+- Use switch expressions for cleaner code with return values
+- Use arrow syntax for simple cases: `case MONDAY -> "Start of week"`
+- Use yield for complex case logic
+- Prefer switch expressions over traditional switch statements
+- Ensure all cases are covered (use default when needed)
+- Use pattern matching when available (Java 17+)
+
+## Records (Java 14+)
+- Use records for simple data containers
+- Records are immutable by default - embrace this
+- Use records for DTOs and value objects
+- Add validation in compact constructor when needed
+- Use records with pattern matching for cleaner code
+- Don't add mutable fields to records
+
+## Text Blocks (Java 15+)
+- Use text blocks for multi-line strings
+- Prefer text blocks for JSON, XML, or SQL strings
+- Use proper indentation for readability
+- Be mindful of trailing whitespace in text blocks
+- Use escape sequences when needed: `\n`, `\t`
+- Format text blocks consistently
+
+## Pattern Matching (Java 17+)
+- Use pattern matching with instanceof for type checks
+- Combine pattern matching with switch expressions
+- Use pattern matching to eliminate casting
+- Pattern variables have limited scope - use appropriately
+- Prefer pattern matching over traditional instanceof + cast
+- Use pattern matching for cleaner null checks
+
+## Sealed Classes (Java 17+)
+- Use sealed classes for controlled inheritance hierarchies
+- Define permitted subclasses explicitly
+- Use sealed classes with pattern matching for exhaustive handling
+- Prefer sealed classes over traditional inheritance for domain modeling
+- Use sealed interfaces for type-safe enums with methods
+- Document the purpose of sealing in comments
+
+## Time API Best Practices
+- Use java.time API instead of Date and Calendar
+- Use LocalDate, LocalTime, LocalDateTime for local times
+- Use ZonedDateTime for times with timezone information
+- Use Instant for machine timestamps
+- Use Duration and Period for time-based amounts
+- Always specify timezone when working with user data
+
+## Collection Factory Methods (Java 9+)
+- Use List.of(), Set.of(), Map.of() for immutable collections
+- Prefer collection factory methods over Arrays.asList() for immutable data
+- Use collection factory methods for test data
+- Remember that factory methods create immutable collections
+- Use factory methods for small, known collections
+- Be aware of null handling in factory methods (they don't accept nulls)
+
+## Module System (Java 9+)
+- Use modules for large applications with clear boundaries
+- Define module dependencies explicitly in module-info.java
+- Expose only necessary packages with exports
+- Use requires transitive for dependencies that leak into API
+- Use services for loose coupling between modules
+- Document module purpose and boundaries
+
+## HTTP Client (Java 11+)
+- Use java.net.http.HttpClient instead of third-party libraries when possible
+- Use asynchronous HTTP calls with CompletableFuture
+- Configure timeouts for HTTP requests
+- Handle HTTP response status codes appropriately
+- Use BodyHandlers for different response types
+- Reuse HttpClient instances for better performance
+
+globs:
+- "**/*.java"
+alwaysApply: true
+---

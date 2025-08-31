@@ -1,6 +1,40 @@
+# Local Development Environment Configuration
 PRODUCT_URL: http://localhost:8082
 CART_URL: http://localhost:8083
 ORDER_URL: http://localhost:8084
 PAYMENT_URL: http://localhost:8085
 KC_ISSUER: http://localhost:8081/realms/ecommerce
 ZIPKIN_ENDPOINT: http://localhost:9411/api/v2/spans
+
+# CORS Configuration for Local Development
+mambogo:
+  cors:
+    enabled: true
+    allowed-origins:
+      - "http://localhost:5173"  # Vite default dev server
+      - "http://localhost:3000"  # Alternative React dev server
+      - "http://localhost:4173"  # Vite preview server
+    allowed-methods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "DELETE"
+      - "OPTIONS"
+      - "PATCH"
+    allowed-headers:
+      - "Authorization"
+      - "Content-Type"
+      - "Accept"
+      - "Origin"
+      - "Access-Control-Request-Method"
+      - "Access-Control-Request-Headers"
+      - "X-Idempotency-Key"
+      - "X-Correlation-ID"
+    exposed-headers:
+      - "Access-Control-Allow-Origin"
+      - "Access-Control-Allow-Credentials"
+      - "X-Correlation-ID"
+      - "X-Rate-Limit-Remaining"
+      - "X-Rate-Limit-Retry-After-Seconds"
+    allow-credentials: true
+    max-age: 3600

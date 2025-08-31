@@ -118,3 +118,63 @@ mambogo:
         - "'self'"
       upgrade-insecure-requests: false  # Allow HTTP in development
       block-all-mixed-content: false
+
+  # Input Sanitization Configuration for Local Development
+  gateway:
+    sanitization:
+      enabled: true
+      log-threats: true
+      block-suspicious-requests: false  # Disabled for local development
+      max-violations-per-origin: 1000  # Higher limit for development
+      violation-window-seconds: 3600
+      
+      # Performance settings for development
+      max-request-body-size: 2097152  # 2MB for development
+      max-parameter-value-length: 8192
+      max-parameter-count: 100
+      enable-async-processing: true
+      
+      # Threat detection settings (relaxed for development)
+      threat-detection:
+        enable-xss-detection: true
+        enable-sql-injection-detection: true
+        enable-path-traversal-detection: true
+        enable-command-injection-detection: true
+        enable-script-injection-detection: true
+        enable-data-exfiltration-detection: true
+        enable-anomaly-detection: false  # Disabled for development
+        threat-score-threshold: 90  # Higher threshold for development
+        
+      # Endpoint-specific policies (relaxed for development)
+      endpoint-policies:
+        products:
+          policy-name: "development-permissive"
+          sanitize-request-body: false
+          sanitize-query-params: true
+          sanitize-headers: false
+          enable-strict-mode: false
+        cart:
+          policy-name: "development-moderate"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: false
+        orders:
+          policy-name: "development-balanced"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: false
+        payments:
+          policy-name: "development-secure"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: true
+          
+      # Whitelist patterns for development
+      whitelist-patterns:
+        - "/actuator/.*"
+        - "/api/csp/.*"
+        - "/api/health/.*"
+        - "/api/metrics/.*"

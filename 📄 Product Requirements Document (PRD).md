@@ -172,7 +172,150 @@ Minimal consumer writes to Analytics table or console log.
 
 ---
 
-## 7\. 🔌 API Contracts
+## 7\. 🗄️ Detailed Database Schema
+
+### 7.1 Product Service (MySQL)
+
+```sql
+CREATE TABLE products (
+    id VARCHAR(36) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL CHECK (price > 0),
+    stock_quantity INT NOT NULL DEFAULT 0 CHECK (stock_quantity >= 0),
+    category VARCHAR(100),
+    image_url VARCHAR(500),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_category (category),
+    INDEX idx_active (is_active),
+    INDEX idx_price (price)
+);
+```
+
+### 7.2 Cart Service (Redis)
+
+```redis
+# Key pattern: cart:{userId}
+# Value: JSON string
+{
+  "userId": "uuid",
+  "items": [
+    {
+      "productId": "uuid",
+      "quantity": 2,
+      "price": 29.99,
+      "addedAt": "2025-08-28T12:00:00Z"
+    }
+  ],
+  "updatedAt": "2025-08-28T12:00:00Z"
+}
+
+# TTL: 30 days
+```
+
+### 7.3 Order Service (PostgreSQL)
+
+```sql
+CREATE TABLE orders (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING' 
+        CHECK (status IN ('PENDING', 'CONFIRMED', 'CANCELLED', 'SHIPPED', 'DELIVERED')),
+    total_amount DECIMAL(10,2) NOT NULL CHECK (total_amount > 0),
+    shipping_address TEXT NOT NULL,
+    payment_method VARCHAR(50) NOT NULL,
+    idempotency_key VARCHAR(64) UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_status (status),
+    INDEX idx_created_at (created_at),
+    INDEX idx_idempotency_key (idempotency_key)
+);
+
+CREATE TABLE order_items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    product_id UUID NOT NULL,
+    quantity INT NOT NULL CHECK (quantity > 0),
+    unit_price DECIMAL(10,2) NOT NULL CHECK (unit_price > 0),
+    total_price DECIMAL(10,2) NOT NULL CHECK (total_price > 0),
+    INDEX idx_order_id (order_id),
+    INDEX idx_product_id (product_id)
+);
+
+CREATE TABLE outbox_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    aggregate_type VARCHAR(100) NOT NULL,
+    aggregate_id VARCHAR(100) NOT NULL,
+    event_type VARCHAR(100) NOT NULL,
+    payload TEXT NOT NULL,
+    headers TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    sent_at TIMESTAMP,
+    retry_count INT DEFAULT 0,
+    max_retries INT DEFAULT 3,
+    next_retry_at TIMESTAMP,
+    status VARCHAR(20) DEFAULT 'PENDING' 
+        CHECK (status IN ('PENDING', 'SENT', 'FAILED', 'RETRY')),
+    INDEX idx_status_created (status, created_at),
+    INDEX idx_aggregate (aggregate_type, aggregate_id)
+);
+```
+
+### 7.4 Payment Service (PostgreSQL)
+
+```sql
+CREATE TABLE payments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_id UUID NOT NULL,
+    amount DECIMAL(10,2) NOT NULL CHECK (amount > 0),
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING'
+        CHECK (status IN ('PENDING', 'AUTHORIZED', 'FAILED', 'REFUNDED')),
+    payment_method VARCHAR(50) NOT NULL,
+    payment_reference VARCHAR(100),
+    failure_reason TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_order_id (order_id),
+    INDEX idx_status (status),
+    INDEX idx_created_at (created_at)
+);
+```
+
+### 7.5 Inventory Service (PostgreSQL)
+
+```sql
+CREATE TABLE inventory (
+    product_id UUID PRIMARY KEY,
+    available_quantity INT NOT NULL DEFAULT 0 CHECK (available_quantity >= 0),
+    reserved_quantity INT NOT NULL DEFAULT 0 CHECK (reserved_quantity >= 0),
+    reorder_point INT DEFAULT 10,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CHECK (available_quantity >= reserved_quantity)
+);
+
+CREATE TABLE inventory_reservations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    product_id UUID NOT NULL REFERENCES inventory(product_id),
+    order_id UUID NOT NULL,
+    quantity INT NOT NULL CHECK (quantity > 0),
+    status VARCHAR(20) NOT NULL DEFAULT 'RESERVED'
+        CHECK (status IN ('RESERVED', 'RELEASED', 'CONFIRMED')),
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_product_id (product_id),
+    INDEX idx_order_id (order_id),
+    INDEX idx_expires_at (expires_at)
+);
+```
+
+---
+
+## 8\. 🔌 API Contracts
 
 ### Gateway
 
@@ -221,7 +364,7 @@ Minimal consumer writes to Analytics table or console log.
 
 ---
 
-## 8\. 📡 Event Contracts
+## 9\. 📡 Event Contracts
 
 ### Topics
 
@@ -283,7 +426,64 @@ Minimal consumer writes to Analytics table or console log.
 
 ---
 
-## 9\. 🧪 Testing & Validation
+## 10\. 🚨 Error Handling & Business Rules
+
+### 10.1 Error Response Format
+All error responses follow this standard format:
+```json
+{
+  "code": "ERROR_CODE",
+  "message": "Human-readable error message",
+  "traceId": "correlation-id",
+  "timestamp": "2025-08-28T12:00:00Z",
+  "details": {
+    "field": "additional error details"
+  }
+}
+```
+
+### 10.2 Common Error Codes
+- `AUTHENTICATION_FAILED`: Invalid or expired JWT token
+- `AUTHORIZATION_FAILED`: Insufficient permissions
+- `VALIDATION_ERROR`: Request validation failed
+- `RESOURCE_NOT_FOUND`: Requested resource not found
+- `DUPLICATE_RESOURCE`: Resource already exists
+- `BUSINESS_RULE_VIOLATION`: Business rule violation
+- `SERVICE_UNAVAILABLE`: Downstream service unavailable
+- `INTERNAL_ERROR`: Unexpected server error
+
+### 10.3 Business Rules
+
+#### Order Rules
+- Minimum order amount: $10.00
+- Maximum order amount: $10,000.00
+- Maximum items per order: 50
+- Order timeout: 30 minutes for payment completion
+- Idempotency key required for order creation
+- Idempotency key validity: 24 hours
+
+#### Inventory Rules
+- Cannot reserve more than available stock
+- Reservation timeout: 5 minutes
+- Auto-release expired reservations
+- Reorder point: 10 units
+- Maximum reservation per user: 5 active reservations
+
+#### Payment Rules
+- Payment must be completed within 30 minutes of order creation
+- 90% success rate for mock payments
+- Failed payments trigger order cancellation
+- Refund processing: immediate for failed orders
+
+#### Cart Rules
+- Cart expiration: 30 days
+- Maximum items per cart: 100
+- Maximum quantity per item: 10
+- Auto-cleanup expired carts
+
+---
+
+## 11\. 🧪 Testing & Validation
 
 * **Postman collection** with flows: login, browse products, add to cart, place order, observe Kafka events.  
 * **Contract testing** (consumer-driven).  
@@ -292,7 +492,38 @@ Minimal consumer writes to Analytics table or console log.
 
 ---
 
-## 10\. 🚀 Delivery & Ops
+## 12\. 🔒 Security & Compliance
+
+### 12.1 Authentication & Authorization
+- **OAuth2/OIDC**: Keycloak integration with PKCE flow
+- **JWT Validation**: At API Gateway and microservices
+- **Token Lifetime**: 15 minutes access, 7 days refresh
+- **Scopes**: `product:read`, `order:write`, `cart:manage`, `admin:all`
+- **Roles**: `ROLE_USER`, `ROLE_ADMIN`
+
+### 12.2 API Security
+- **Rate Limiting**: 100 requests/minute per user, 1000 requests/minute per IP
+- **CORS**: Configured for SPA domain only
+- **Input Validation**: All inputs validated and sanitized
+- **SQL Injection Protection**: Parameterized queries only
+- **XSS Protection**: Content Security Policy headers
+
+### 12.3 Data Protection
+- **Encryption at Rest**: Database encryption enabled
+- **Encryption in Transit**: TLS 1.3 for all communications
+- **PII Handling**: User data encrypted, minimal collection
+- **Audit Logging**: All sensitive operations logged
+- **Data Retention**: 7 years for orders, 30 days for carts
+
+### 12.4 Compliance
+- **GDPR**: Right to be forgotten, data portability
+- **PCI DSS**: Payment data not stored (mock service)
+- **Logging**: No sensitive data in logs
+- **Monitoring**: Security events monitored and alerted
+
+---
+
+## 13\. 🚀 Delivery & Ops
 
 * **CI/CD**: Minimal pipeline (lint → build → test → compose up).  
 * **Rollback strategy**: revert to previous Docker image tag.  
@@ -301,7 +532,7 @@ Minimal consumer writes to Analytics table or console log.
 
 ---
 
-## 11\. ⏱️ Timeline (2 Days)
+## 14\. ⏱️ Timeline (2 Days)
 
 **Day 1**
 
@@ -322,7 +553,7 @@ Minimal consumer writes to Analytics table or console log.
 
 ---
 
-## 12\. 🎯 Success Criteria
+## 15\. 🎯 Success Criteria
 
 * User can log in via Keycloak and is redirected back.  
 * User can browse products and manage cart.  
@@ -333,7 +564,7 @@ Minimal consumer writes to Analytics table or console log.
 
 ---
 
-## 13\. 📦 Deliverables
+## 16\. 📦 Deliverables
 
 * Repo: `ecommerce/` with gateway, services, frontend, docker-compose.  
 * Docs: README with setup instructions.  

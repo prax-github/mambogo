@@ -1,0 +1,261 @@
+# IMPLEMENTATION FAILURE PREVENTION RULES
+# Based on SEC-08 lessons learned - Professional Software Engineering Standards
+# 
+# This file contains core rules. Additional domain-specific rules are in .cursor/rules/
+# - delivery-rules.mdc: Core delivery and verification standards
+# - project-context-rules.mdc: Project documentation and context requirements (CRITICAL)
+# - spring-boot-rules.mdc: Spring Boot specific patterns
+# - code-quality-rules.mdc: Code quality and development practices
+# - testing-rules.mdc: Testing strategies and standards
+# - security-rules.mdc: Security implementation standards
+# - microservices-rules.mdc: Distributed systems best practices
+# - communication-rules.mdc: Professional communication protocols
+
+## 🚨 CRITICAL RULES - NEVER VIOLATE THESE
+
+### RULE 0: PROJECT CONTEXT REVIEW (MANDATORY BEFORE ANY TASK)
+- MUST read Product Requirements Document (PRD).md before starting any implementation
+- MUST review E-commerce Microservices MVP — Execution Roadmap.md for project context
+- MUST examine ALL implementation logs in "implementation log/" folder using glob_file_search
+- MUST read ALL implementation logs to understand complete implementation patterns and lessons learned
+- MUST check interview notes in "interview notes/" folder for technical context
+- MUST understand how new task fits into overall project architecture
+- MUST use read_file tool to review these documents before creating implementation plan
+
+### RULE 0.5: USER APPROVAL REQUIRED BEFORE IMPLEMENTATION (CRITICAL)
+- After completing project context review and creating implementation plan with TODO items
+- MUST present the complete implementation approach and TODO list to user
+- MUST WAIT for explicit user approval before starting ANY implementation work
+- NEVER proceed directly from planning to implementation without user confirmation
+- User must explicitly say "go ahead", "proceed", "start implementation" or similar
+- This applies to ALL tasks regardless of complexity or size
+- STOP and wait for user approval - do not continue with implementation
+
+### RULE 1: VERIFICATION BEFORE COMPLETION CLAIMS
+- NEVER use phrases like "implementation is complete", "task is done", "ready for deployment", or "SEC-X is finished" without systematic verification
+- ALWAYS use "implementation appears ready, let me verify..." or "let me run verification checks before confirming completion"
+- MUST run read_lints tool and verify compilation before any completion claims
+- MUST update todo_write with actual verification status, not assumptions
+- MUST complete MANDATORY COMPLETION CHECKLIST from .cursor/rules/completion-rules.mdc before claiming task completion
+- MUST create ALL standard deliverables (implementation log + interview guide) before updating roadmap status
+
+### RULE 2: HONEST PROFESSIONAL COMMUNICATION
+- If you discover errors after claiming progress: IMMEDIATELY acknowledge them
+- Never make excuses or defensive responses when issues are found
+- Always take ownership: "I found an issue with my implementation..."
+- Focus on solutions, not explanations for why something went wrong
+- Be explicit about what has been verified vs what has been implemented
+
+### RULE 3: SYSTEMATIC VERIFICATION PROTOCOL
+Before claiming any component is "complete":
+1. Use read_lints tool on all modified files - fix ALL warnings/errors
+2. Verify all imports resolve and compile correctly
+3. Check for Spring bean conflicts (no duplicate @Component + @ConfigurationProperties)
+4. Create minimal test to verify basic functionality
+5. Update todo_write with "completed" status only after verification
+
+## 🔧 SPRING BOOT SPECIFIC RULES
+
+### Bean Configuration Prevention (Critical - SEC-08 Root Cause)
+- NEVER use both @Component AND @ConfigurationProperties on the same class
+- NEVER use both @Component AND @Bean method for the same type
+- Pattern: @ConfigurationProperties class WITHOUT @Component + @EnableConfigurationProperties + @Bean method
+- Before adding any @Autowired field: verify the target bean exists and no circular dependencies
+- Use constructor injection over field injection when possible
+
+### Spring Context Validation
+- For @ConfigurationProperties: Remove @Component annotation, use @EnableConfigurationProperties
+- Check for duplicate bean names using grep_search before adding new beans
+- Test bean creation with minimal Spring context rather than full @SpringBootTest
+- When Spring context fails to load: check for duplicate beans and circular dependencies first
+
+### Metrics Implementation Standards
+- Keep metrics simple: use basic counter.increment() and gauge.set() patterns  
+- Avoid complex Tags.of() usage - use simple recordMetric(origin, method, status) wrapper methods
+- Mock MeterRegistry in tests rather than creating complex test configurations
+- Name metrics following prometheus conventions: snake_case with descriptive prefixes
+
+## 🧪 TESTING AND QUALITY RULES
+
+### Testing Strategy (Prevent Integration Test Failures)
+- Start with lightweight tests: @ExtendWith(SpringExtension.class) instead of @SpringBootTest
+- Create @TestConfiguration classes for complex setups with mocked dependencies
+- Use @SpringBootTest only when absolutely necessary (full integration testing)
+- Mock external dependencies (JwtDecoder, ApplicationEventPublisher, etc.) in tests
+- Test one component at a time rather than full system integration
+
+### Code Quality Gates (Mandatory)
+- Fix ALL linting errors immediately - never defer warnings
+- Remove unused imports, variables, methods, and fields immediately when detected
+- Use read_lints tool after every 2-3 file modifications
+- Ensure proper error handling (try-catch) in all service methods
+- Maintain consistent naming: camelCase variables, PascalCase classes, UPPER_SNAKE_CASE constants
+
+### Incremental Development Protocol
+- Make changes to maximum 2-3 files at once before verification
+- Compile and verify after each new class or significant method addition
+- Never accumulate more than 5 unverified changes
+- Use todo_write to track progress in real-time, not at the end
+
+## 📋 WORKFLOW AND PROCESS RULES
+
+### Before Starting Any Implementation
+- Read and understand complete requirements
+- Use glob_file_search to find ALL implementation logs and read each one completely
+- Use codebase_search to understand existing architecture and patterns  
+- Use grep_search to find similar implementations to avoid duplication
+- Create implementation plan with verification checkpoints using todo_write
+- Define "done" criteria explicitly with measurable verification steps
+- Present implementation plan to user and WAIT for explicit approval before proceeding
+
+### During Implementation
+- Update todo_write frequently with "in_progress" and "completed" status
+- Use read_file before attempting search_replace operations
+- Verify file structure with list_dir before creating new files in unfamiliar locations
+- Run read_lints after every significant change to catch issues early
+
+### Error Handling Discipline
+- When compilation errors occur: STOP adding new features until ALL errors are resolved
+- Read complete error messages - don't just glance and make assumptions
+- Fix errors in dependency order: classes with no dependencies first
+- Use systematic debugging: understand root cause before making changes
+- Document what was learned from error resolution for future reference
+
+### Configuration Management
+- Always read configuration files completely before modifying them
+- Verify YAML structure and nesting before making changes using read_file
+- Test configuration loading in isolation when possible
+- Keep environment-specific configurations consistent (local, docker, prod, k8s)
+- Use search_replace carefully after understanding current file structure
+
+## 🎯 COMMUNICATION AND ACCOUNTABILITY RULES
+
+### Progress Reporting Standards
+- Use specific language: "Component X implemented and verified to compile" vs "Task complete"
+- Report issues discovered immediately during development, not after user feedback
+- Provide realistic time estimates and update them if circumstances change
+- Ask for clarification if requirements are unclear rather than making assumptions
+
+### Professional Accountability Patterns
+- Deliver incrementally with verification at each step
+- Take ownership of code quality and delivery commitments
+- Learn from mistakes systematically and update practices accordingly
+- Maintain professional tone especially when issues arise or pressure increases
+
+### User Interaction Protocol
+- Never claim completion without evidence (compilation, tests, verification)
+- When asked "are you sure?": always re-verify rather than defending previous claims
+- If unsure about anything: admit uncertainty and propose verification approach
+- Update memory using update_memory tool when user corrects or teaches something new
+
+## 🔍 TECHNOLOGY-SPECIFIC PREVENTION RULES
+
+### Spring Cloud Gateway Implementation
+- Extend AbstractGatewayFilterFactory for custom filters with proper constructor
+- Implement Ordered interface with appropriate precedence values
+- Use reactive patterns (Mono/Flux) correctly - avoid blocking operations
+- Test filters with MockServerHttpRequest/MockServerHttpResponse
+
+### Prometheus Metrics Best Practices
+- Use simple patterns: counter.increment(), gauge.set(), timer.record()
+- Avoid complex Tags construction unless absolutely necessary
+- Name metrics with snake_case following Prometheus conventions
+- Provide help text and meaningful labels for all custom metrics
+
+### YAML Configuration Standards
+- Maintain consistent indentation (2 spaces throughout)
+- Use kebab-case for property names following Spring Boot conventions
+- Group related properties under logical prefixes
+- Validate YAML syntax and structure before committing changes
+
+## 🚦 AUTOMATED RED FLAGS - STOP IMMEDIATELY WHEN
+
+- More than 3 compilation errors exist simultaneously
+- Any "NoSuchBeanDefinition" or "NoUniqueBeanDefinition" Spring errors occur
+- More than 10 minutes pass without successful compilation
+- Temptation arises to claim completion without running verification tools
+- Making changes without understanding their impact on existing code
+- Copying complex patterns without understanding their purpose
+
+## 📊 VERIFICATION CHECKLIST TEMPLATE
+
+Before claiming ANY component is complete:
+□ All files compile without errors (verified with read_lints)
+□ All imports resolve correctly
+□ No unused variables, methods, or imports remain
+□ Spring context loads successfully (if applicable)
+□ Basic functionality test created and passes
+□ Configuration properties work as expected
+□ Integration points with existing code function correctly
+□ TODO list updated with verified completion status
+□ Can explain every line of code written
+□ Would be confident deploying this to production
+
+## 🎯 STANDARD IMPLEMENTATION WORKFLOW
+
+### For New Feature Implementation:
+1. Complete RULE 0 project context review (including ALL implementation logs)
+2. Create TODO list using todo_write with specific, verifiable tasks
+3. Present implementation plan and WAIT for user approval
+4. ONLY AFTER USER APPROVAL: Use codebase_search to understand existing patterns
+5. Implement one component at a time
+6. Verify compilation with read_lints after each component
+7. Add minimal test for each component
+8. Check integration with existing code
+9. Update configuration files carefully using read_file first
+10. Verify all linting passes with read_lints
+11. Update TODO progress with todo_write
+12. Only then claim component "ready for review"
+
+### For Spring Boot Components:
+1. Design bean dependencies first - avoid circular references
+2. Create @ConfigurationProperties class WITHOUT @Component annotation
+3. Create main component classes with clear single responsibilities
+4. Create @Configuration class with @EnableConfigurationProperties and @Bean methods
+5. Test bean creation with minimal Spring context (@ExtendWith + @TestConfiguration)
+6. Add integration points incrementally with verification
+7. Verify no duplicate beans exist using grep_search
+
+## 🎓 LEARNING AND IMPROVEMENT RULES
+
+### After Each Task Completion:
+- Document what went well and what could be improved
+- Update these rules if new failure patterns are discovered
+- Create reusable patterns and templates for similar future tasks
+- Share learnings that could benefit future implementations
+
+### Continuous Quality Improvement:
+- Maintain zero tolerance for compromised code quality
+- Prefer simple, maintainable solutions over complex, "clever" ones
+- Build incrementally with verification rather than big-bang implementations
+- Always prioritize working, verified code over feature completeness
+
+## 🏆 THE ULTIMATE PRINCIPLE
+
+**"PROFESSIONAL PARANOIA"** - Always assume something could be wrong and verify everything:
+- Code might not compile
+- Dependencies might be missing  
+- Configuration might be incorrect
+- Tests might not cover edge cases
+- Integration might fail silently
+- Spring context might not load
+
+Therefore: **Verification is not optional - it's professional responsibility.**
+
+## 📝 MANDATORY LANGUAGE PATTERNS
+
+### NEVER Say:
+- "Implementation is complete"
+- "Task is finished" 
+- "Ready for deployment"
+- "Everything is working"
+- "Should work fine"
+
+### ALWAYS Say:
+- "Implementation appears ready, let me verify..."
+- "Component X is implemented and verified to compile"
+- "Let me run final verification before confirming completion"
+- "I've verified X, Y, Z - now checking integration"
+- "Found an issue during verification, fixing now"
+
+Remember: The SEC-08 experience taught us that technical skills alone are insufficient. Professional software engineering requires discipline, systematic verification, honest communication, and accountability for quality deliverables.

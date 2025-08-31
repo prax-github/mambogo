@@ -1,0 +1,62 @@
+---
+description:
+# Testing Rules - Comprehensive Testing Strategy
+
+## Testing Strategy Framework
+- Start with unit tests (no Spring context needed)
+- Add lightweight integration tests (@ExtendWith(SpringExtension.class))
+- Mock external dependencies rather than configuring them
+- Only use @SpringBootTest if absolutely necessary
+- Create @TestConfiguration for complex setups
+
+## Spring Boot Testing Best Practices
+- Use @ExtendWith(SpringExtension.class) instead of @SpringBootTest when possible
+- Create @TestConfiguration classes for complex setups with mocked dependencies
+- Mock external dependencies (JwtDecoder, ApplicationEventPublisher, etc.) in tests
+- Test one component at a time rather than full system integration
+- Use @MockBean sparingly and only when necessary
+
+## Test Structure Standards
+- Follow AAA pattern: Arrange, Act, Assert
+- Use descriptive test method names that explain the scenario
+- Include both positive and negative test cases
+- Test edge cases and error conditions
+- Use @DisplayName for clear test descriptions
+
+## Test Data Management
+- Use test builders or factories for complex objects
+- Keep test data minimal and focused on the test scenario
+- Use parameterized tests for testing multiple scenarios
+- Avoid hard-coded values that make tests brittle
+
+## Mock Management
+- Mock only external dependencies, not the class under test
+- Use @Mock for unit tests, @MockBean for Spring integration tests
+- Verify interactions with mocks when behavior is important
+- Reset mocks between tests to avoid test pollution
+
+## Test Performance
+- Keep tests fast - aim for <1 second per test
+- Use @DirtiesContext sparingly as it slows down test execution
+- Consider using @TestInstance(Lifecycle.PER_CLASS) for expensive setup
+- Profile slow tests and optimize them
+
+## Test Organization
+- Group related tests in nested classes using @Nested
+- Use @TestMethodOrder when test order matters
+- Separate unit tests from integration tests in different packages
+- Use meaningful package structures for test organization
+
+## Verification Requirements
+- Create minimal test for each new component before claiming completion
+- Verify tests actually test the intended functionality
+- Ensure tests pass consistently (no flaky tests)
+- Update tests when refactoring production code
+
+globs:
+- "**/test/**/*.java"
+- "**/src/test/**/*.java"
+- "**/*Test.java"
+- "**/*Tests.java"
+alwaysApply: true
+---

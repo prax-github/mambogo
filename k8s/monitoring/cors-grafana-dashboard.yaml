@@ -1,0 +1,682 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cors-grafana-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+    app: grafana
+    component: cors-monitoring
+data:
+  cors-security-dashboard.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "CORS Security & Policy Dashboard",
+        "description": "Comprehensive CORS monitoring, security, and policy compliance dashboard",
+        "tags": ["cors", "security", "policy", "compliance"],
+        "style": "dark",
+        "timezone": "browser",
+        "editable": true,
+        "graphTooltip": 1,
+        "time": {
+          "from": "now-24h",
+          "to": "now"
+        },
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "CORS Request Volume",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "rate(cors_requests_total[5m])",
+                "legendFormat": "Requests/sec"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "thresholds": {
+                  "steps": [
+                    {"color": "green", "value": null},
+                    {"color": "yellow", "value": 50},
+                    {"color": "red", "value": 100}
+                  ]
+                },
+                "unit": "reqps"
+              }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "CORS Blocked Requests",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "rate(cors_blocked_requests_total[5m])",
+                "legendFormat": "Blocked/sec"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "thresholds": {
+                  "steps": [
+                    {"color": "green", "value": null},
+                    {"color": "yellow", "value": 1},
+                    {"color": "red", "value": 5}
+                  ]
+                },
+                "unit": "reqps"
+              }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Security Violations",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "rate(cors_security_violations_total[5m])",
+                "legendFormat": "Violations/sec"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "thresholds": {
+                  "steps": [
+                    {"color": "green", "value": null},
+                    {"color": "yellow", "value": 0.1},
+                    {"color": "red", "value": 1}
+                  ]
+                },
+                "unit": "ops"
+              }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0}
+          },
+          {
+            "id": 4,
+            "title": "Active Origins",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "cors_active_origins",
+                "legendFormat": "Origins"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "value"
+                },
+                "unit": "short"
+              }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+          },
+          {
+            "id": 5,
+            "title": "CORS Request Rate by Origin",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(cors_requests_total[5m])",
+                "legendFormat": "{{origin}}"
+              }
+            ],
+            "xAxis": {
+              "show": true
+            },
+            "yAxes": [
+              {
+                "label": "Requests/sec",
+                "show": true
+              }
+            ],
+            "legend": {
+              "show": true,
+              "values": true,
+              "current": true
+            },
+            "gridPos": {"h": 9, "w": 12, "x": 0, "y": 8}
+          },
+          {
+            "id": 6,
+            "title": "CORS Validation Performance",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(cors_validation_duration_seconds_bucket[5m]))",
+                "legendFormat": "95th percentile"
+              },
+              {
+                "expr": "histogram_quantile(0.50, rate(cors_validation_duration_seconds_bucket[5m]))",
+                "legendFormat": "50th percentile"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Duration (ms)",
+                "show": true,
+                "logBase": 1,
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 9, "w": 12, "x": 12, "y": 8}
+          },
+          {
+            "id": 7,
+            "title": "Blocked Requests by Reason",
+            "type": "piechart",
+            "targets": [
+              {
+                "expr": "increase(cors_blocked_requests_total[1h])",
+                "legendFormat": "{{reason}}"
+              }
+            ],
+            "options": {
+              "reduceOptions": {
+                "values": false,
+                "calcs": ["lastNotNull"],
+                "fields": ""
+              },
+              "pieType": "pie",
+              "displayLabels": ["name", "value"]
+            },
+            "gridPos": {"h": 9, "w": 8, "x": 0, "y": 17}
+          },
+          {
+            "id": 8,
+            "title": "Cache Efficiency",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(cors_cache_hits_total[5m]) / (rate(cors_cache_hits_total[5m]) + rate(cors_cache_misses_total[5m])) * 100",
+                "legendFormat": "Cache Hit Rate %"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Percentage",
+                "show": true,
+                "min": 0,
+                "max": 100
+              }
+            ],
+            "gridPos": {"h": 9, "w": 8, "x": 8, "y": 17}
+          },
+          {
+            "id": 9,
+            "title": "Security Incidents",
+            "type": "table",
+            "targets": [
+              {
+                "expr": "increase(cors_incidents_total[1h])",
+                "legendFormat": "{{type}} - {{severity}}"
+              }
+            ],
+            "options": {
+              "showHeader": true,
+              "sortBy": [{"desc": true, "displayName": "Value"}]
+            },
+            "gridPos": {"h": 9, "w": 8, "x": 16, "y": 17}
+          },
+          {
+            "id": 10,
+            "title": "Policy Violations by Type",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(cors_policy_violations_total[5m])",
+                "legendFormat": "{{type}}"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Violations/sec",
+                "show": true,
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 26}
+          },
+          {
+            "id": 11,
+            "title": "Origin Trust Score",
+            "type": "heatmap",
+            "targets": [
+              {
+                "expr": "cors_trusted_origins",
+                "legendFormat": "Trust Score"
+              }
+            ],
+            "options": {
+              "calculate": true,
+              "yAxis": {
+                "min": 0,
+                "max": 1
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 26}
+          },
+          {
+            "id": 12,
+            "title": "CORS Request Methods Distribution",
+            "type": "piechart",
+            "targets": [
+              {
+                "expr": "increase(cors_requests_total[1h])",
+                "legendFormat": "{{method}}"
+              }
+            ],
+            "options": {
+              "reduceOptions": {
+                "values": false,
+                "calcs": ["lastNotNull"],
+                "fields": ""
+              },
+              "pieType": "donut",
+              "displayLabels": ["name", "percent"]
+            },
+            "gridPos": {"h": 8, "w": 8, "x": 0, "y": 34}
+          },
+          {
+            "id": 13,
+            "title": "Preflight Request Rate",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(cors_preflight_requests_total[5m])",
+                "legendFormat": "{{origin}}"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Preflight Requests/sec",
+                "show": true,
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 8, "x": 8, "y": 34}
+          },
+          {
+            "id": 14,
+            "title": "High-Risk Origins",
+            "type": "table",
+            "targets": [
+              {
+                "expr": "cors_blocked_origins",
+                "legendFormat": "Blocked Origins"
+              }
+            ],
+            "options": {
+              "showHeader": true,
+              "sortBy": [{"desc": true, "displayName": "Risk Score"}]
+            },
+            "gridPos": {"h": 8, "w": 8, "x": 16, "y": 34}
+          }
+        ],
+        "annotations": {
+          "list": [
+            {
+              "name": "CORS Incidents",
+              "datasource": "Prometheus",
+              "enable": true,
+              "expr": "increase(cors_incidents_total[5m]) > 0",
+              "iconColor": "red",
+              "titleFormat": "CORS Security Incident",
+              "textFormat": "{{type}} - {{severity}}"
+            },
+            {
+              "name": "Policy Changes",
+              "datasource": "Prometheus", 
+              "enable": true,
+              "expr": "increase(cors_policy_violations_total[5m]) > 10",
+              "iconColor": "yellow",
+              "titleFormat": "High Policy Violation Rate",
+              "textFormat": "{{type}} violations detected"
+            }
+          ]
+        },
+        "templating": {
+          "list": [
+            {
+              "name": "origin",
+              "type": "query",
+              "query": "label_values(cors_requests_total, origin)",
+              "refresh": 1,
+              "includeAll": true,
+              "allValue": ".*",
+              "multi": true
+            },
+            {
+              "name": "severity",
+              "type": "custom",
+              "options": [
+                {"text": "All", "value": ".*"},
+                {"text": "Critical", "value": "critical"},
+                {"text": "High", "value": "high"},
+                {"text": "Medium", "value": "medium"},
+                {"text": "Low", "value": "low"}
+              ],
+              "includeAll": true,
+              "multi": true
+            }
+          ]
+        },
+        "links": [
+          {
+            "title": "CORS Security Guide",
+            "url": "/d/cors-compliance/cors-compliance-dashboard",
+            "type": "dashboards"
+          }
+        ]
+      }
+    }
+  cors-compliance-dashboard.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "CORS Compliance & Audit Dashboard",
+        "description": "CORS compliance monitoring and audit trail visualization",
+        "tags": ["cors", "compliance", "audit", "governance"],
+        "style": "dark",
+        "timezone": "browser",
+        "editable": true,
+        "time": {
+          "from": "now-7d",
+          "to": "now"
+        },
+        "refresh": "5m",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Compliance Score",
+            "type": "gauge",
+            "targets": [
+              {
+                "expr": "100 - (cors_policy_violations_total * 10)",
+                "legendFormat": "Compliance Score"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "min": 0,
+                "max": 100,
+                "thresholds": {
+                  "steps": [
+                    {"color": "red", "value": 0},
+                    {"color": "yellow", "value": 70},
+                    {"color": "green", "value": 90}
+                  ]
+                },
+                "unit": "percent"
+              }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Policy Violations (24h)",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "increase(cors_policy_violations_total[24h])",
+                "legendFormat": "Violations"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "thresholds": {
+                  "steps": [
+                    {"color": "green", "value": null},
+                    {"color": "yellow", "value": 10},
+                    {"color": "red", "value": 50}
+                  ]
+                }
+              }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Security Incidents (24h)",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "increase(cors_incidents_total[24h])",
+                "legendFormat": "Incidents"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "thresholds": {
+                  "steps": [
+                    {"color": "green", "value": null},
+                    {"color": "yellow", "value": 1},
+                    {"color": "red", "value": 5}
+                  ]
+                }
+              }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0}
+          },
+          {
+            "id": 4,
+            "title": "Audit Events (24h)",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "increase(cors_audit_events_total[24h])",
+                "legendFormat": "Audit Events"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "value"
+                },
+                "unit": "short"
+              }
+            },
+            "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+          },
+          {
+            "id": 5,
+            "title": "Compliance Trend",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "100 - (rate(cors_policy_violations_total[1h]) * 100)",
+                "legendFormat": "Compliance Score %"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Compliance %",
+                "show": true,
+                "min": 0,
+                "max": 100
+              }
+            ],
+            "gridPos": {"h": 9, "w": 12, "x": 0, "y": 8}
+          },
+          {
+            "id": 6,
+            "title": "Security Violations by Severity",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(cors_security_violations_total{severity=\"critical\"}[5m])",
+                "legendFormat": "Critical"
+              },
+              {
+                "expr": "rate(cors_security_violations_total{severity=\"high\"}[5m])",
+                "legendFormat": "High"
+              },
+              {
+                "expr": "rate(cors_security_violations_total{severity=\"medium\"}[5m])",
+                "legendFormat": "Medium"
+              },
+              {
+                "expr": "rate(cors_security_violations_total{severity=\"low\"}[5m])",
+                "legendFormat": "Low"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Violations/sec",
+                "show": true,
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 9, "w": 12, "x": 12, "y": 8}
+          },
+          {
+            "id": 7,
+            "title": "Top Violating Origins",
+            "type": "table",
+            "targets": [
+              {
+                "expr": "topk(10, increase(cors_policy_violations_total[24h]))",
+                "legendFormat": "{{origin}}"
+              }
+            ],
+            "options": {
+              "showHeader": true,
+              "sortBy": [{"desc": true, "displayName": "Violations"}]
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 17}
+          },
+          {
+            "id": 8,
+            "title": "Audit Event Types",
+            "type": "piechart",
+            "targets": [
+              {
+                "expr": "increase(cors_audit_events_total[24h])",
+                "legendFormat": "{{event_type}}"
+              }
+            ],
+            "options": {
+              "reduceOptions": {
+                "values": false,
+                "calcs": ["lastNotNull"],
+                "fields": ""
+              },
+              "pieType": "pie",
+              "displayLabels": ["name", "value"]
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 17}
+          },
+          {
+            "id": 9,
+            "title": "Policy Configuration Status",
+            "type": "table",
+            "targets": [
+              {
+                "expr": "cors_trusted_origins",
+                "legendFormat": "Trusted Origins"
+              },
+              {
+                "expr": "cors_blocked_origins", 
+                "legendFormat": "Blocked Origins"
+              }
+            ],
+            "options": {
+              "showHeader": true
+            },
+            "gridPos": {"h": 8, "w": 8, "x": 0, "y": 25}
+          },
+          {
+            "id": 10,
+            "title": "Incident Response Time",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(cors_incident_response_duration_seconds_bucket[5m]))",
+                "legendFormat": "95th percentile"
+              },
+              {
+                "expr": "histogram_quantile(0.50, rate(cors_incident_response_duration_seconds_bucket[5m]))",
+                "legendFormat": "50th percentile"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Response Time (s)",
+                "show": true,
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 8, "x": 8, "y": 25}
+          },
+          {
+            "id": 11,
+            "title": "Recent Critical Events",
+            "type": "logs",
+            "targets": [
+              {
+                "expr": "{job=\"gateway-service\"} |~ \"CRITICAL.*CORS\"",
+                "refId": "A"
+              }
+            ],
+            "options": {
+              "showTime": true,
+              "showLabels": false,
+              "showCommonLabels": false,
+              "wrapLogMessage": true,
+              "prettifyLogMessage": false,
+              "enableLogDetails": true,
+              "sortOrder": "Descending"
+            },
+            "gridPos": {"h": 8, "w": 8, "x": 16, "y": 25}
+          }
+        ],
+        "annotations": {
+          "list": [
+            {
+              "name": "Critical Compliance Issues",
+              "datasource": "Prometheus",
+              "enable": true,
+              "expr": "increase(cors_security_violations_total{severity=\"critical\"}[5m]) > 0",
+              "iconColor": "red",
+              "titleFormat": "Critical Compliance Violation",
+              "textFormat": "{{type}} violation detected"
+            }
+          ]
+        },
+        "templating": {
+          "list": [
+            {
+              "name": "timeRange",
+              "type": "custom",
+              "options": [
+                {"text": "Last 24h", "value": "24h"},
+                {"text": "Last 7d", "value": "7d"},
+                {"text": "Last 30d", "value": "30d"}
+              ],
+              "current": {"text": "Last 24h", "value": "24h"}
+            }
+          ]
+        }
+      }
+    }

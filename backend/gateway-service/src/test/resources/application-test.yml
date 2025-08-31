@@ -1,0 +1,49 @@
+# Test Environment Configuration for CORS Integration Testing
+
+mambogo:
+  cors:
+    enabled: true
+    allowed-origins:
+      - "http://localhost:5173"
+      - "http://localhost:3000"
+    allowed-methods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "DELETE"
+      - "OPTIONS"
+    allowed-headers:
+      - "Authorization"
+      - "Content-Type"
+      - "Accept"
+      - "Origin"
+    exposed-headers:
+      - "Access-Control-Allow-Origin"
+      - "X-Correlation-ID"
+    allow-credentials: true
+    max-age: 3600
+    # CORS Policy Configuration for Testing
+    policy:
+      enforcement-enabled: true
+      auto-block-enabled: false  # Disabled for testing
+      auto-block-threshold: 50
+      require-user-agent: false  # Relaxed for testing
+      max-requests-per-minute: 1000  # High limit for testing
+      compliance-validation-enabled: true
+      audit-logging-enabled: false  # Disabled for testing
+      security-monitoring-enabled: true
+      performance-monitoring-enabled: true
+      performance-warning-threshold-ms: 200
+      performance-critical-threshold-ms: 500
+      alert-notifications-enabled: false  # Disabled for testing
+
+# Disable Eureka for testing
+eureka:
+  client:
+    enabled: false
+
+# Test logging
+logging:
+  level:
+    com.mambogo: DEBUG
+    org.springframework.web.cors: DEBUG

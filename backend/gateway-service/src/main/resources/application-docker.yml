@@ -1,6 +1,176 @@
+# Docker Compose Environment Configuration
 PRODUCT_URL: http://product-service:8082
 CART_URL: http://cart-service:8083
 ORDER_URL: http://order-service:8084
 PAYMENT_URL: http://payment-service:8085
 KC_ISSUER: http://keycloak:8080/realms/ecommerce
 ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+
+# CORS Configuration for Docker Compose (Demo Environment)
+mambogo:
+  cors:
+    enabled: true
+    allowed-origins:
+      - "https://demo.mambogo.com"
+      - "http://localhost:5173"  # For local development against Docker backend
+    allowed-methods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "DELETE"
+      - "OPTIONS"
+      - "PATCH"
+    allowed-headers:
+      - "Authorization"
+      - "Content-Type"
+      - "Accept"
+      - "Origin"
+      - "Access-Control-Request-Method"
+      - "Access-Control-Request-Headers"
+      - "X-Idempotency-Key"
+      - "X-Correlation-ID"
+    exposed-headers:
+      - "Access-Control-Allow-Origin"
+      - "Access-Control-Allow-Credentials"
+      - "X-Correlation-ID"
+      - "X-Rate-Limit-Remaining"
+      - "X-Rate-Limit-Retry-After-Seconds"
+    allow-credentials: true
+    max-age: 3600
+    # Advanced CORS Policy Configuration for Demo Environment
+    policy:
+      enforcement-enabled: true
+      auto-block-enabled: true
+      auto-block-threshold: 15
+      require-user-agent: true
+      max-requests-per-minute: 150
+      compliance-validation-enabled: true
+      audit-logging-enabled: true
+      security-monitoring-enabled: true
+      performance-monitoring-enabled: true
+      performance-warning-threshold-ms: 75
+      performance-critical-threshold-ms: 150
+      alert-notifications-enabled: true
+      trusted-origins:
+        - "https://demo.mambogo.com"
+        - "http://localhost:5173"  # For development against demo backend
+
+  # CSP Policy Configuration for Demo Environment
+  csp:
+    enabled: true
+    report-only: false
+    violation-reporting-enabled: true
+    report-uri: "/api/csp/violations"
+    max-violations-per-origin: 200  # Moderate limit for demo
+    nonce-enabled: true
+    hash-enabled: false  # Disabled for demo flexibility
+    metrics-enabled: true
+    performance-monitoring-enabled: true
+    
+    directives:
+      default-src:
+        - "'self'"
+      script-src:
+        - "'self'"
+        - "'unsafe-inline'"  # Some flexibility for demo
+        - "https://demo.mambogo.com"
+      style-src:
+        - "'self'"
+        - "'unsafe-inline'"  # Flexibility for demo styling
+        - "fonts.googleapis.com"
+        - "https://demo.mambogo.com"
+      img-src:
+        - "'self'"
+        - "data:"
+        - "https:"
+        - "https://demo.mambogo.com"
+      connect-src:
+        - "'self'"
+        - "https://demo.mambogo.com"
+        - "http://localhost:5173"  # For local development
+      font-src:
+        - "'self'"
+        - "fonts.gstatic.com"
+        - "fonts.googleapis.com"
+        - "data:"
+      object-src:
+        - "'none'"
+      media-src:
+        - "'self'"
+        - "https://demo.mambogo.com"
+      child-src:
+        - "'self'"
+      frame-src:
+        - "'self'"
+      frame-ancestors:
+        - "'none'"
+      form-action:
+        - "'self'"
+        - "https://demo.mambogo.com"
+      base-uri:
+        - "'self'"
+      manifest-src:
+        - "'self'"
+      worker-src:
+        - "'self'"
+      upgrade-insecure-requests: true  # Enforce HTTPS in demo
+      block-all-mixed-content: false  # More lenient for demo
+
+  # Input Sanitization Configuration for Demo Environment
+  gateway:
+    sanitization:
+      enabled: true
+      log-threats: true
+      block-suspicious-requests: true  # Enabled for demo security
+      max-violations-per-origin: 200  # Moderate limit for demo
+      violation-window-seconds: 3600
+      
+      # Performance settings for demo
+      max-request-body-size: 1048576  # 1MB for demo
+      max-parameter-value-length: 4096
+      max-parameter-count: 50
+      enable-async-processing: true
+      
+      # Threat detection settings (balanced for demo)
+      threat-detection:
+        enable-xss-detection: true
+        enable-sql-injection-detection: true
+        enable-path-traversal-detection: true
+        enable-command-injection-detection: true
+        enable-script-injection-detection: true
+        enable-data-exfiltration-detection: true
+        enable-anomaly-detection: true  # Enabled for demo
+        threat-score-threshold: 75  # Balanced threshold for demo
+        
+      # Endpoint-specific policies (balanced for demo)
+      endpoint-policies:
+        products:
+          policy-name: "demo-permissive"
+          sanitize-request-body: false
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: false
+        cart:
+          policy-name: "demo-moderate"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: false
+        orders:
+          policy-name: "demo-restrictive"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: true
+        payments:
+          policy-name: "demo-strict"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: true
+          
+      # Whitelist patterns for demo
+      whitelist-patterns:
+        - "/actuator/.*"
+        - "/api/csp/.*"
+        - "/api/health/.*"

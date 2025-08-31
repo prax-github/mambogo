@@ -1,0 +1,220 @@
+# Production Environment Configuration
+PRODUCT_URL: ${PRODUCT_SERVICE_URL:http://product-service}
+CART_URL: ${CART_SERVICE_URL:http://cart-service}
+ORDER_URL: ${ORDER_SERVICE_URL:http://order-service}
+PAYMENT_URL: ${PAYMENT_SERVICE_URL:http://payment-service}
+KC_ISSUER: ${KC_ISSUER:https://auth.mambogo.com/realms/ecommerce}
+ZIPKIN_ENDPOINT: ${ZIPKIN_ENDPOINT:http://zipkin:9411/api/v2/spans}
+
+# CORS Configuration for Production Environment
+mambogo:
+  cors:
+    enabled: true
+    allowed-origins:
+      - "https://www.mambogo.com"    # Primary production domain
+      - "https://mambogo.com"        # Apex domain
+    allowed-methods:
+      - "GET"
+      - "POST" 
+      - "PUT"
+      - "DELETE"
+      - "OPTIONS"
+      - "PATCH"
+    allowed-headers:
+      - "Authorization"
+      - "Content-Type"
+      - "Accept"
+      - "Origin"
+      - "Access-Control-Request-Method"
+      - "Access-Control-Request-Headers"
+      - "X-Idempotency-Key"
+      - "X-Correlation-ID"
+    exposed-headers:
+      - "Access-Control-Allow-Origin"
+      - "Access-Control-Allow-Credentials"
+      - "X-Correlation-ID"
+      - "X-Rate-Limit-Remaining"
+      - "X-Rate-Limit-Retry-After-Seconds"
+    allow-credentials: true
+    max-age: 7200  # Longer cache for production (2 hours)
+    # Advanced CORS Policy Configuration for Production
+    policy:
+      enforcement-enabled: true
+      auto-block-enabled: true
+      auto-block-threshold: 10
+      auto-block-duration-hours: 48  # Longer blocks in production
+      require-user-agent: true
+      max-requests-per-minute: 100
+      compliance-validation-enabled: true
+      compliance-check-interval-hours: 12  # More frequent compliance checks
+      audit-logging-enabled: true
+      audit-log-batch-size: 50  # Smaller batches for faster processing
+      audit-log-flush-interval-seconds: 15
+      security-monitoring-enabled: true
+      security-analysis-interval-minutes: 3  # More frequent security analysis
+      performance-monitoring-enabled: true
+      performance-warning-threshold-ms: 50
+      performance-critical-threshold-ms: 100
+      alert-notifications-enabled: true
+      alert-suppression-interval-minutes: 5  # Shorter suppression in production
+      incident-escalation-threshold: 3  # Lower threshold for production
+      trusted-origins:
+        - "https://www.mambogo.com"
+        - "https://mambogo.com"
+      suspicious-patterns:
+        - ".*javascript:.*"
+        - ".*data:.*"
+        - ".*file:.*"
+        - "null"
+        - "undefined"
+        - ".*localhost.*"  # Block localhost in production
+        - ".*\.local.*"    # Block .local domains in production
+
+  # CSP Policy Configuration for Production
+  csp:
+    enabled: true
+    report-only: false
+    violation-reporting-enabled: true
+    report-uri: "/api/csp/violations"
+    max-violations-per-origin: 50  # Stricter limit for production
+    nonce-enabled: true
+    hash-enabled: true  # Enable hash validation in production
+    metrics-enabled: true
+    performance-monitoring-enabled: true
+    
+    directives:
+      default-src:
+        - "'self'"
+      script-src:
+        - "'self'"
+        # No 'unsafe-inline' in production for better security
+      style-src:
+        - "'self'"
+        - "fonts.googleapis.com"
+        # Limited unsafe-inline for critical styles only
+        - "'unsafe-inline'"
+      img-src:
+        - "'self'"
+        - "data:"
+        - "https:"
+        - "https://www.mambogo.com"
+        - "https://mambogo.com"
+      connect-src:
+        - "'self'"
+        - "https://www.mambogo.com"
+        - "https://mambogo.com"
+        - "https://api.mambogo.com"  # Production API domain
+      font-src:
+        - "'self'"
+        - "fonts.gstatic.com"
+        - "fonts.googleapis.com"
+        - "data:"
+      object-src:
+        - "'none'"
+      media-src:
+        - "'self'"
+        - "https://www.mambogo.com"
+        - "https://mambogo.com"
+      child-src:
+        - "'none'"  # Stricter in production
+      frame-src:
+        - "'none'"  # Stricter in production
+      frame-ancestors:
+        - "'none'"
+      form-action:
+        - "'self'"
+        - "https://www.mambogo.com"
+        - "https://mambogo.com"
+      base-uri:
+        - "'self'"
+      manifest-src:
+        - "'self'"
+      worker-src:
+        - "'self'"
+      upgrade-insecure-requests: true  # Force HTTPS in production
+      block-all-mixed-content: true  # Block mixed content in production
+
+  # Input Sanitization Configuration for Production Environment
+  gateway:
+    sanitization:
+      enabled: true
+      log-threats: true
+      block-suspicious-requests: true  # Strict blocking in production
+      max-violations-per-origin: 50  # Lower limit for production
+      violation-window-seconds: 3600
+      
+      # Performance settings for production
+      max-request-body-size: 524288  # 512KB for production
+      max-parameter-value-length: 2048
+      max-parameter-count: 30
+      enable-async-processing: true
+      
+      # Threat detection settings (strict for production)
+      threat-detection:
+        enable-xss-detection: true
+        enable-sql-injection-detection: true
+        enable-path-traversal-detection: true
+        enable-command-injection-detection: true
+        enable-script-injection-detection: true
+        enable-data-exfiltration-detection: true
+        enable-anomaly-detection: true  # Enabled for production
+        threat-score-threshold: 50  # Lower threshold for production
+        
+      # Endpoint-specific policies (strict for production)
+      endpoint-policies:
+        products:
+          policy-name: "production-permissive"
+          sanitize-request-body: false
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: false
+        cart:
+          policy-name: "production-moderate"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: true
+        orders:
+          policy-name: "production-restrictive"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: true
+        payments:
+          policy-name: "production-strict"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: true
+          
+      # Whitelist patterns for production (minimal)
+      whitelist-patterns:
+        - "/actuator/health"
+        - "/api/csp/violations"
+
+# Production-specific security settings
+server:
+  port: 8080
+  
+spring:
+  profiles:
+    active: prod
+    
+# Disable detailed error messages in production
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: never
+      
+# Production logging
+logging:
+  level:
+    com.mambogo: INFO
+    org.springframework.security: WARN
+    org.springframework.web.cors: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

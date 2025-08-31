@@ -1,6 +1,180 @@
+# Local Development Environment Configuration
 PRODUCT_URL: http://localhost:8082
 CART_URL: http://localhost:8083
 ORDER_URL: http://localhost:8084
 PAYMENT_URL: http://localhost:8085
 KC_ISSUER: http://localhost:8081/realms/ecommerce
 ZIPKIN_ENDPOINT: http://localhost:9411/api/v2/spans
+
+# CORS Configuration for Local Development
+mambogo:
+  cors:
+    enabled: true
+    allowed-origins:
+      - "http://localhost:5173"  # Vite default dev server
+      - "http://localhost:3000"  # Alternative React dev server
+      - "http://localhost:4173"  # Vite preview server
+    allowed-methods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "DELETE"
+      - "OPTIONS"
+      - "PATCH"
+    allowed-headers:
+      - "Authorization"
+      - "Content-Type"
+      - "Accept"
+      - "Origin"
+      - "Access-Control-Request-Method"
+      - "Access-Control-Request-Headers"
+      - "X-Idempotency-Key"
+      - "X-Correlation-ID"
+    exposed-headers:
+      - "Access-Control-Allow-Origin"
+      - "Access-Control-Allow-Credentials"
+      - "X-Correlation-ID"
+      - "X-Rate-Limit-Remaining"
+      - "X-Rate-Limit-Retry-After-Seconds"
+    allow-credentials: true
+    max-age: 3600
+    # Advanced CORS Policy Configuration for Local Development
+    policy:
+      enforcement-enabled: true
+      auto-block-enabled: false  # Disabled for local development
+      auto-block-threshold: 20
+      require-user-agent: false  # Relaxed for development
+      max-requests-per-minute: 200  # Higher limit for development
+      compliance-validation-enabled: true
+      audit-logging-enabled: true
+      security-monitoring-enabled: true
+      performance-monitoring-enabled: true
+      performance-warning-threshold-ms: 100  # More relaxed for local
+      performance-critical-threshold-ms: 200
+      alert-notifications-enabled: false  # Disabled for local development
+
+  # CSP Policy Configuration for Local Development
+  csp:
+    enabled: true
+    report-only: false
+    violation-reporting-enabled: true
+    report-uri: "/api/csp/violations"
+    max-violations-per-origin: 1000  # Higher limit for development
+    nonce-enabled: true
+    hash-enabled: false
+    metrics-enabled: true
+    performance-monitoring-enabled: true
+    
+    directives:
+      default-src:
+        - "'self'"
+      script-src:
+        - "'self'"
+        - "'unsafe-inline'"  # Allowed in development for convenience
+        - "localhost:*"
+        - "127.0.0.1:*"
+      style-src:
+        - "'self'"
+        - "'unsafe-inline'"  # Allowed in development for convenience
+        - "fonts.googleapis.com"
+        - "localhost:*"
+        - "127.0.0.1:*"
+      img-src:
+        - "'self'"
+        - "data:"
+        - "https:"
+        - "localhost:*"
+        - "127.0.0.1:*"
+      connect-src:
+        - "'self'"
+        - "http://localhost:5173"
+        - "http://localhost:3000"
+        - "http://127.0.0.1:5173"
+        - "http://127.0.0.1:3000"
+        - "ws://localhost:*"  # WebSocket support for development
+        - "wss://localhost:*"
+      font-src:
+        - "'self'"
+        - "fonts.gstatic.com"
+        - "fonts.googleapis.com"
+        - "data:"
+      object-src:
+        - "'none'"
+      media-src:
+        - "'self'"
+      child-src:
+        - "'self'"
+      frame-src:
+        - "'self'"
+      frame-ancestors:
+        - "'none'"
+      form-action:
+        - "'self'"
+      base-uri:
+        - "'self'"
+      manifest-src:
+        - "'self'"
+      worker-src:
+        - "'self'"
+      upgrade-insecure-requests: false  # Allow HTTP in development
+      block-all-mixed-content: false
+
+  # Input Sanitization Configuration for Local Development
+  gateway:
+    sanitization:
+      enabled: true
+      log-threats: true
+      block-suspicious-requests: false  # Disabled for local development
+      max-violations-per-origin: 1000  # Higher limit for development
+      violation-window-seconds: 3600
+      
+      # Performance settings for development
+      max-request-body-size: 2097152  # 2MB for development
+      max-parameter-value-length: 8192
+      max-parameter-count: 100
+      enable-async-processing: true
+      
+      # Threat detection settings (relaxed for development)
+      threat-detection:
+        enable-xss-detection: true
+        enable-sql-injection-detection: true
+        enable-path-traversal-detection: true
+        enable-command-injection-detection: true
+        enable-script-injection-detection: true
+        enable-data-exfiltration-detection: true
+        enable-anomaly-detection: false  # Disabled for development
+        threat-score-threshold: 90  # Higher threshold for development
+        
+      # Endpoint-specific policies (relaxed for development)
+      endpoint-policies:
+        products:
+          policy-name: "development-permissive"
+          sanitize-request-body: false
+          sanitize-query-params: true
+          sanitize-headers: false
+          enable-strict-mode: false
+        cart:
+          policy-name: "development-moderate"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: false
+        orders:
+          policy-name: "development-balanced"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: false
+        payments:
+          policy-name: "development-secure"
+          sanitize-request-body: true
+          sanitize-query-params: true
+          sanitize-headers: true
+          enable-strict-mode: true
+          
+      # Whitelist patterns for development
+      whitelist-patterns:
+        - "/actuator/.*"
+        - "/api/csp/.*"
+        - "/api/health/.*"
+        - "/api/metrics/.*"

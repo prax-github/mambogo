@@ -1,0 +1,82 @@
+---
+description:
+# Microservices Implementation Rules - Distributed Systems Best Practices
+
+## Service Design Principles
+- Design services around business capabilities
+- Ensure services are independently deployable
+- Implement proper service boundaries
+- Use database per service pattern
+- Design for failure and resilience
+
+## Spring Cloud Gateway Rules
+- Extend AbstractGatewayFilterFactory for custom filters
+- Implement Ordered interface with appropriate precedence values
+- Use reactive patterns (Mono/Flux) correctly - avoid blocking operations
+- Test filters with MockServerHttpRequest/MockServerHttpResponse
+- Implement proper error handling in gateway filters
+
+## Service Communication
+- Use asynchronous communication where possible
+- Implement circuit breakers for external service calls
+- Add retry logic with exponential backoff
+- Use proper timeout configurations
+- Implement bulkhead pattern for resource isolation
+
+## Configuration Management
+- Externalize all configuration
+- Use Spring Cloud Config for centralized configuration
+- Implement configuration refresh capabilities
+- Use environment-specific configurations
+- Never hardcode environment-specific values
+
+## Service Discovery
+- Register services with Eureka or equivalent
+- Implement health checks for all services
+- Use service names instead of hardcoded URLs
+- Implement graceful service shutdown
+- Handle service unavailability scenarios
+
+## Monitoring & Observability
+- Implement distributed tracing
+- Add metrics for all service interactions
+- Use structured logging with correlation IDs
+- Implement health check endpoints
+- Monitor service dependencies
+
+## Security in Microservices
+- Implement service-to-service authentication
+- Use JWT tokens for stateless authentication
+- Implement proper CORS policies
+- Secure inter-service communication
+- Implement rate limiting per service
+
+## Error Handling & Resilience
+- Implement circuit breaker pattern
+- Use bulkhead pattern for resource isolation
+- Implement proper fallback mechanisms
+- Handle partial failures gracefully
+- Use timeout and retry patterns
+
+## Testing Microservices
+- Implement contract testing
+- Use test containers for integration testing
+- Mock external service dependencies
+- Test failure scenarios and resilience patterns
+- Implement end-to-end testing for critical paths
+
+## Deployment & DevOps
+- Implement blue-green deployments
+- Use feature flags for gradual rollouts
+- Implement proper logging aggregation
+- Use container orchestration (Kubernetes)
+- Implement automated rollback procedures
+
+globs:
+- "**/*.java"
+- "**/*.yml"
+- "**/*.yaml"
+- "**/pom.xml"
+- "**/build.gradle"
+alwaysApply: true
+---

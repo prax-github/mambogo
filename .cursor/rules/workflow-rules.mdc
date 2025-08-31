@@ -1,0 +1,70 @@
+---
+description:
+# Workflow and Process Rules - Professional Development Standards
+
+## Before Starting Any Implementation
+- Read and understand complete requirements
+- Use glob_file_search to find ALL implementation logs and read each one completely
+- Use codebase_search to understand existing architecture and patterns  
+- Use grep_search to find similar implementations to avoid duplication
+- Create implementation plan with verification checkpoints using todo_write
+- Define "done" criteria explicitly with measurable verification steps
+- Present implementation plan to user and WAIT for explicit user approval before proceeding
+
+## CRITICAL: User Approval Required Before Implementation
+- After completing project context review and creating implementation plan with TODO items
+- MUST present the complete implementation approach and TODO list to user
+- MUST WAIT for explicit user approval before starting ANY implementation work  
+- NEVER proceed directly from planning to implementation without user confirmation
+- User must explicitly say "go ahead", "proceed", "start implementation" or similar
+- This applies to ALL tasks regardless of complexity or size
+- STOP and wait for user approval - do not continue with implementation
+
+## During Implementation
+- Update todo_write frequently with "in_progress" and "completed" status
+- Use read_file before attempting search_replace operations
+- Verify file structure with list_dir before creating new files in unfamiliar locations
+- Run read_lints after every significant change to catch issues early
+
+## Tool Usage Protocol
+- Always use read_lints tool on files you plan to modify
+- Check for existing similar components to avoid duplication
+- Understand the current architecture before adding new components
+- Use todo_write tool to track progress and mark completed items
+- Run read_lints after every 2-3 file changes
+- Update TODO status as you progress, not at the end
+
+## Communication Standards
+- Update progress using todo_write before claiming any completion
+- Use specific language: "Component X implemented and verified" vs "Task complete"
+- Report any issues discovered immediately
+- Ask for clarification if requirements are unclear
+
+## Verification Protocol
+- Verify all modified files compile without errors
+- Check that all imports resolve correctly
+- Run any existing tests to ensure no regressions
+- Review code for unused variables, methods, imports
+
+## Task Completion Protocol (MANDATORY)
+- BEFORE claiming any task as "complete": run the MANDATORY COMPLETION CHECKLIST from completion-rules.mdc
+- NEVER update roadmap status without completing ALL standard deliverables
+- NEVER abandon TODO list due to context switching or new feedback
+- Complete current deliverables BEFORE addressing new concerns
+
+## Error Recovery Protocols
+- When compilation errors occur: STOP making new changes until all errors are resolved
+- Read the complete error message, don't just glance at it
+- Fix errors in dependency order (classes with no dependencies first)
+- Verify each fix by recompiling before moving to next error
+
+## Configuration Management
+- Always read configuration files completely before modifying them
+- Verify YAML structure and nesting before making changes using read_file
+- Test configuration loading in isolation when possible
+- Keep environment-specific configurations consistent (local, docker, prod, k8s)
+- Use search_replace carefully after understanding current file structure
+
+globs:
+alwaysApply: true
+---

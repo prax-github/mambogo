@@ -1,6 +1,0 @@
-PRODUCT_URL: http://product-service:8082
-CART_URL: http://cart-service:8083
-ORDER_URL: http://order-service:8084
-PAYMENT_URL: http://payment-service:8085
-KC_ISSUER: http://keycloak:8080/realms/ecommerce
-ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans

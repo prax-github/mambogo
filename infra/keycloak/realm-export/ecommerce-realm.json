@@ -11,17 +11,165 @@
       "attributes": {
         "pkce.code.challenge.method": "S256",
         "post.logout.redirect.uris": "+"
-      }
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "roles",
+        "profile",
+        "email",
+        "product:read"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt",
+        "cart:manage",
+        "order:write",
+        "payment:process",
+        "admin:all"
+      ]
     }
   ],
-  "roles": { "realm": [ { "name": "ROLE_USER" }, { "name": "ROLE_ADMIN" } ] },
+  "clientScopes": [
+    {
+      "name": "product:read",
+      "description": "Read access to product catalog and information",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true",
+        "consent.screen.text": "View products and catalog"
+      },
+      "protocolMappers": [
+        {
+          "name": "product-read-scope",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "product-service",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "name": "cart:manage",
+      "description": "Full access to shopping cart operations",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true",
+        "consent.screen.text": "Manage your shopping cart"
+      },
+      "protocolMappers": [
+        {
+          "name": "cart-manage-scope",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "cart-service",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "name": "order:write",
+      "description": "Create and modify orders",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true",
+        "consent.screen.text": "Create and manage orders"
+      },
+      "protocolMappers": [
+        {
+          "name": "order-write-scope",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "order-service",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "name": "payment:process",
+      "description": "Process payment transactions",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true",
+        "consent.screen.text": "Process payments"
+      },
+      "protocolMappers": [
+        {
+          "name": "payment-process-scope",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "payment-service",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "name": "admin:all",
+      "description": "Administrative access to all services",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true",
+        "consent.screen.text": "Administrative access"
+      },
+      "protocolMappers": [
+        {
+          "name": "admin-all-scope",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "admin-service",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "roles": { 
+    "realm": [ 
+      { "name": "ROLE_USER" }, 
+      { "name": "ROLE_ADMIN" } 
+    ] 
+  },
   "users": [
     {
       "username": "demo",
       "enabled": true,
       "emailVerified": true,
       "credentials": [{ "type": "password", "value": "demo", "temporary": false }],
-      "realmRoles": ["ROLE_USER"]
+      "realmRoles": ["ROLE_USER"],
+      "clientRoles": {
+        "react-spa": ["product:read", "cart:manage", "order:write"]
+      }
+    },
+    {
+      "username": "admin",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "admin", "temporary": false }],
+      "realmRoles": ["ROLE_ADMIN"],
+      "clientRoles": {
+        "react-spa": ["product:read", "cart:manage", "order:write", "payment:process", "admin:all"]
+      }
     }
   ]
 }

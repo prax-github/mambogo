@@ -1,0 +1,96 @@
+---
+description:
+# Java Coding Standards and Best Practices - Professional Java Development
+
+## Code Formatting and Style
+- Use 4 spaces for indentation, never tabs
+- Maximum line length of 120 characters
+- Use consistent brace style (opening brace on same line)
+- Add blank lines to separate logical sections within methods
+- Use meaningful variable and method names that explain intent
+- Follow Java naming conventions strictly
+
+## Variable and Method Naming
+- Use camelCase for variables and methods: `getUserName()`, `totalAmount`
+- Use PascalCase for classes: `UserService`, `PaymentProcessor`
+- Use UPPER_SNAKE_CASE for constants: `MAX_RETRY_ATTEMPTS`, `DEFAULT_TIMEOUT`
+- Boolean variables should start with `is`, `has`, `can`, `should`: `isValid`, `hasPermission`
+- Avoid abbreviations unless widely understood: `user` not `usr`, `calculate` not `calc`
+- Use intention-revealing names: `activeUsers` not `list`, `validateInput()` not `check()`
+
+## Class Design Principles
+- Keep classes focused on single responsibility
+- Prefer composition over inheritance
+- Make classes immutable when possible
+- Use builder pattern for complex object construction
+- Implement equals(), hashCode(), and toString() consistently
+- Prefer interfaces over concrete classes for method parameters
+
+## Method Design
+- Keep methods small and focused (max 20-30 lines)
+- Methods should do one thing well
+- Use descriptive method names that explain what the method does
+- Minimize method parameters (max 3-4, use objects for more)
+- Return early to reduce nesting levels
+- Use guard clauses for validation
+
+## Exception Handling
+- Use checked exceptions for recoverable conditions
+- Use unchecked exceptions for programming errors
+- Catch specific exceptions, not generic Exception
+- Always log exceptions with meaningful context
+- Clean up resources in finally blocks or use try-with-resources
+- Don't ignore exceptions - at minimum log them
+
+## Collections and Generics
+- Always use generics with collections: `List<String>` not `List`
+- Prefer interfaces over concrete classes: `List<String>` not `ArrayList<String>`
+- Use diamond operator for type inference: `new ArrayList<>()`
+- Prefer immutable collections when possible
+- Use appropriate collection types for the use case
+- Initialize collections with expected capacity when known
+
+## Null Safety and Optional
+- Use Optional for return types that may not have a value
+- Validate method parameters for null when necessary
+- Use @Nullable and @NonNull annotations for clarity
+- Prefer Optional.empty() over returning null
+- Use defensive copying for mutable objects
+- Initialize collections rather than leaving them null
+
+## Modern Java Features (Java 8+)
+- Use lambda expressions for functional interfaces
+- Prefer method references when applicable: `String::valueOf`
+- Use Stream API for collection processing
+- Leverage var keyword for local variable type inference (Java 10+)
+- Use switch expressions for cleaner code (Java 14+)
+- Utilize record classes for data containers (Java 14+)
+
+## Performance Considerations
+- Use StringBuilder for string concatenation in loops
+- Avoid creating unnecessary objects in hot paths
+- Use lazy initialization when appropriate
+- Prefer primitive collections for large datasets
+- Consider using enum instead of string constants
+- Use appropriate data structures for the use case
+
+## Concurrency and Thread Safety
+- Prefer immutable objects for thread safety
+- Use concurrent collections instead of synchronized collections
+- Avoid shared mutable state when possible
+- Use proper synchronization when sharing mutable state
+- Prefer higher-level concurrency utilities over low-level synchronization
+- Document thread safety guarantees in class comments
+
+## Resource Management
+- Always use try-with-resources for AutoCloseable resources
+- Close resources in reverse order of opening
+- Don't rely on finalize() for resource cleanup
+- Be explicit about resource ownership and lifecycle
+- Use connection pooling for expensive resources
+- Implement AutoCloseable for custom resource classes
+
+globs:
+- "**/*.java"
+alwaysApply: true
+---

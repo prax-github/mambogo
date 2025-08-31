@@ -5,7 +5,7 @@ import com.mambogo.gateway.metrics.SimpleCorsMetricsCollector;
 import com.mambogo.gateway.monitoring.CorsPerformanceMonitor;
 import com.mambogo.gateway.security.CorsSecurityMonitor;
 import com.mambogo.gateway.audit.CorsAuditLogger;
-import io.micrometer.core.instrument.Timer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;

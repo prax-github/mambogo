@@ -18,11 +18,13 @@ description:
 - **E-commerce Microservices MVP — Execution Roadmap.md** - Project execution plan and milestones
 - **docs/RSL-01-IMPLEMENTATION-SUMMARY.md** - Overall implementation summary
 
-#### 2. Implementation History (MANDATORY)
-- **implementation log/*.md** - All previous implementation logs for context
+#### 2. Implementation History (MANDATORY - ALL LOGS REQUIRED)
+- **implementation log/*.md** - ALL previous implementation logs MUST be reviewed for complete context
+- Use glob_file_search to find ALL implementation logs in the folder
+- Read EVERY implementation log file to understand complete implementation patterns and lessons learned  
 - Review logs in chronological order: SEC-01 through current
-- Understand patterns, decisions, and lessons learned from previous implementations
-- Identify reusable components and established patterns
+- Understand patterns, decisions, and lessons learned from ALL previous implementations
+- Identify reusable components and established patterns from entire implementation history
 
 #### 3. Technical Context (MANDATORY)
 - **interview notes/*.md** - Technical deep-dive materials and architectural decisions
@@ -140,9 +142,10 @@ Understand integration requirements:
 # Always start with these tool calls:
 1. read_file("Product Requirements Document (PRD).md")
 2. read_file("E-commerce Microservices MVP — Execution Roadmap.md")
-3. list_dir("implementation log/") # Review all previous logs
-4. list_dir("interview notes/") # Check technical context
-5. codebase_search to understand existing architecture
+3. glob_file_search("implementation log/*.md") # Find ALL implementation logs
+4. read_file() for EVERY implementation log found # Complete implementation history
+5. list_dir("interview notes/") # Check technical context
+6. codebase_search to understand existing architecture
 ```
 
 #### During Implementation Planning

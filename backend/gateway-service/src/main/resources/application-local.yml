@@ -52,3 +52,69 @@ mambogo:
       performance-warning-threshold-ms: 100  # More relaxed for local
       performance-critical-threshold-ms: 200
       alert-notifications-enabled: false  # Disabled for local development
+
+  # CSP Policy Configuration for Local Development
+  csp:
+    enabled: true
+    report-only: false
+    violation-reporting-enabled: true
+    report-uri: "/api/csp/violations"
+    max-violations-per-origin: 1000  # Higher limit for development
+    nonce-enabled: true
+    hash-enabled: false
+    metrics-enabled: true
+    performance-monitoring-enabled: true
+    
+    directives:
+      default-src:
+        - "'self'"
+      script-src:
+        - "'self'"
+        - "'unsafe-inline'"  # Allowed in development for convenience
+        - "localhost:*"
+        - "127.0.0.1:*"
+      style-src:
+        - "'self'"
+        - "'unsafe-inline'"  # Allowed in development for convenience
+        - "fonts.googleapis.com"
+        - "localhost:*"
+        - "127.0.0.1:*"
+      img-src:
+        - "'self'"
+        - "data:"
+        - "https:"
+        - "localhost:*"
+        - "127.0.0.1:*"
+      connect-src:
+        - "'self'"
+        - "http://localhost:5173"
+        - "http://localhost:3000"
+        - "http://127.0.0.1:5173"
+        - "http://127.0.0.1:3000"
+        - "ws://localhost:*"  # WebSocket support for development
+        - "wss://localhost:*"
+      font-src:
+        - "'self'"
+        - "fonts.gstatic.com"
+        - "fonts.googleapis.com"
+        - "data:"
+      object-src:
+        - "'none'"
+      media-src:
+        - "'self'"
+      child-src:
+        - "'self'"
+      frame-src:
+        - "'self'"
+      frame-ancestors:
+        - "'none'"
+      form-action:
+        - "'self'"
+      base-uri:
+        - "'self'"
+      manifest-src:
+        - "'self'"
+      worker-src:
+        - "'self'"
+      upgrade-insecure-requests: false  # Allow HTTP in development
+      block-all-mixed-content: false

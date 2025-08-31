@@ -48,7 +48,7 @@ public class CorsPolicyManager {
     // Policy patterns
     private static final Pattern LOCALHOST_PATTERN = Pattern.compile("^https?://localhost(:\\d+)?$");
     private static final Pattern DEVELOPMENT_PATTERN = Pattern.compile("^https?://[\\w-]+(:\\d+)?\\.(local|dev|test)$");
-    private static final Pattern PRODUCTION_PATTERN = Pattern.compile("^https://[\\w-]+\\.(com|org|net|io)$");
+
     
     // Policy enforcement settings
     private static final int VIOLATION_THRESHOLD = 5; // violations before policy adjustment

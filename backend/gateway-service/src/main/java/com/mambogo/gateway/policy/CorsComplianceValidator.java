@@ -35,7 +35,7 @@ public class CorsComplianceValidator {
     
     // Compliance tracking
     private volatile ComplianceReport lastComplianceReport;
-    private volatile Instant lastComplianceCheck = Instant.now();
+
 
     public CorsComplianceValidator(CorsProperties corsProperties, SimpleCorsMetricsCollector metricsCollector) {
         this.corsProperties = corsProperties;
@@ -87,7 +87,6 @@ public class CorsComplianceValidator {
         // Generate compliance report
         ComplianceReport report = new ComplianceReport(issues);
         lastComplianceReport = report;
-        lastComplianceCheck = Instant.now();
         
         // Log compliance summary
         logComplianceSummary(report);

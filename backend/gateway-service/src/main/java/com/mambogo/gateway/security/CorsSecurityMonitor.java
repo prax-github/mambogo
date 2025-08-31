@@ -41,7 +41,7 @@ public class CorsSecurityMonitor {
     // Security thresholds
     private static final int MAX_REQUESTS_PER_MINUTE = 100;
     private static final int MAX_BLOCKED_REQUESTS_PER_HOUR = 50;
-    private static final double SUSPICIOUS_BLOCK_RATIO_THRESHOLD = 0.3; // 30%
+
     private static final int RAPID_FIRE_THRESHOLD = 20; // requests per 10 seconds
     
     // Pattern detection

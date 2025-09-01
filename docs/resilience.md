@@ -13,6 +13,26 @@ The implementation uses Resilience4j with the following patterns:
 
 ## Configuration
 
+### Kafka Retry Topic Flow
+
+```mermaid
+flowchart LR
+  Producer[Producer]
+  Main[main-topic]
+  Retry1[main-topic.retry-1]
+  Retry2[main-topic.retry-2]
+  DLQ[main-topic.DLQ]
+  Consumer[Consumer]
+
+  Producer --> Main
+  Main -->|Success| Consumer
+  Main -->|Fail| Retry1
+  Retry1 -->|Backoff 1s| Main
+  Retry1 -->|Fail again| Retry2
+  Retry2 -->|Backoff 5s| Main
+  Retry2 -->|Final fail| DLQ
+```
+
 ### Resilience4j Settings
 
 All services use the same `outbound` instance configuration:

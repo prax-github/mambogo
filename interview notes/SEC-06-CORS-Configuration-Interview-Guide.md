@@ -65,6 +65,25 @@ graph TD
     J[JWT Validation] --> B
 ```
 
+### CORS Preflight and Actual Request
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant FE as SPA
+  participant GW as Gateway
+  participant SVC as Service
+
+  FE->>GW: OPTIONS /api/* (Origin, Access-Control-Request-Method)
+  GW->>GW: Validate origin/method/headers against whitelist
+  GW-->>FE: 204 No Content (Access-Control-Allow-*)
+
+  FE->>GW: GET/POST /api/* (Origin, credentials)
+  GW->>SVC: Forward request
+  SVC-->>GW: 200 OK
+  GW-->>FE: 200 OK (CORS allow headers)
+```
+
 ### Design Decisions & Trade-offs
 
 #### 1. Gateway-Level vs Service-Level CORS

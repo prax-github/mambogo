@@ -128,6 +128,24 @@ public ResponseEntity<Void> reportViolation(@RequestBody CspViolationEvent viola
 - **Metrics Collection**: Prometheus metrics for monitoring
 - **Alert Generation**: Critical violation notifications
 
+### CSP Request/Response + Violation Reporting
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant SPA as SPA
+  participant GW as Gateway
+  participant VR as Violation Receiver
+
+  SPA->>GW: GET /index.html
+  GW-->>SPA: 200 OK (Content-Security-Policy: ... 'nonce-{nonce}')
+  SPA->>SPA: Attach nonce to inline scripts
+  SPA->>GW: XHR calls (allowed by connect-src)
+  note over SPA: If violation occurs...
+  SPA->>VR: POST /api/csp/violations (JSON report)
+  VR-->>SPA: 200 OK
+```
+
 ### 5. Environment-Specific Policies
 
 **Q: How do you handle different CSP requirements across development, staging, and production environments?**

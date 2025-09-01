@@ -56,6 +56,18 @@ This guide prepares you to discuss input validation and sanitization implementat
 - Performance implications of multi-layer validation
 - When to fail fast vs. comprehensive validation
 
+### Validation Pipeline Overview
+
+```mermaid
+flowchart TD
+  A[Gateway Checks] --> B[Controller @Valid]
+  B --> C[DTO Bean Validation]
+  C --> D[Business Rule Validation]
+  D --> E[Persistence Constraints]
+  E --> F[Success]
+  D -- Violations --> G[Problem+JSON Error]
+```
+
 #### **Q: How do you implement Bean Validation (JSR-303/380) in Spring Boot?**
 
 **Technical Implementation:**

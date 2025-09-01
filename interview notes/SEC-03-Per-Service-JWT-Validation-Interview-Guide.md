@@ -19,6 +19,26 @@
 
 **Real-world Impact**: Without per-service validation, a compromised gateway or network could bypass all security, and services would be vulnerable to internal threats.
 
+### Gateway + Service Double Validation
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant SPA as React SPA
+  participant GW as Gateway
+  participant OrderSvc as Order Service
+  participant KC as Keycloak
+
+  SPA->>GW: Request (Authorization: Bearer JWT)
+  GW->>KC: Validate JWT (issuer, exp, signature)
+  KC-->>GW: Valid
+  GW->>OrderSvc: Forward + X-JWT-Token + X-User-Id
+  OrderSvc->>OrderSvc: Re-validate JWT (audience, scopes)
+  OrderSvc->>OrderSvc: Extract user context + business logic
+  OrderSvc-->>GW: Response
+  GW-->>SPA: Response
+```
+
 ---
 
 ## 🏗️ **Architecture Decisions - The "Why" Behind Choices**

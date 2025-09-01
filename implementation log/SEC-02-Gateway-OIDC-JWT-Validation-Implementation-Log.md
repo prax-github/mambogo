@@ -110,6 +110,26 @@ configuration.setMaxAge(3600L);
 - `X-Username`: Username from preferred_username claim
 - `X-Authenticated`: Authentication status flag
 
+### JWT Validation + Header Propagation Sequence
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant SPA as React SPA
+  participant GW as Gateway
+  participant KC as Keycloak
+  participant SVC as Order Service
+
+  SPA->>GW: POST /api/orders (Authorization: Bearer JWT, X-Request-Id)
+  GW->>KC: Validate JWT (JWK endpoint)
+  KC-->>GW: Valid (user claims)
+  GW->>GW: Extract claims (sub, preferred_username, roles)
+  GW->>SVC: Forward + X-JWT-Token + X-User-Id + X-User-Roles + X-Request-Id
+  SVC->>SVC: Process with user context (no re-validation)
+  SVC-->>GW: 201 Created
+  GW-->>SPA: 201 Created
+```
+
 ### 4. Gateway Route Configuration
 **File**: `backend/gateway-service/src/main/java/com/mambogo/gateway/config/GatewayConfig.java`
 

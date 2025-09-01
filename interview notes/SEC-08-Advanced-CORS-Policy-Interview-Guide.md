@@ -73,6 +73,41 @@ graph TD
     I --> O[IncidentResponse]
 ```
 
+### CORS Request Sequences
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant FE as SPA
+  participant GW as Gateway
+  participant SVC as Service
+
+  Note over FE,GW: Preflight (OPTIONS)
+  FE->>GW: OPTIONS /api/resource (Origin, Access-Control-Request-Method)
+  GW->>GW: Validate origin + method (policy manager)
+  GW-->>FE: 204 No Content (Access-Control-Allow-*)
+
+  Note over FE,GW: Actual Request
+  FE->>GW: GET /api/resource (Origin, X-Request-Id)
+  GW->>GW: SecurityMonitor + PolicyManager + Metrics + Audit
+  GW->>SVC: Forward request
+  SVC-->>GW: 200 OK
+  GW-->>FE: 200 OK (CORS allow headers)
+```
+
+### Incident Escalation Flow
+
+```mermaid
+flowchart TD
+  A[Violation detected] --> B{Severity >= threshold?}
+  B -- No --> C[Log + metric only]
+  B -- Yes --> D[Block origin]
+  D --> E[Audit event]
+  D --> F[Notify security]
+  E --> G[Review dashboard]
+  F --> G
+```
+
 ### Key Components Deep Dive
 
 #### 1. CorsMetricsCollector

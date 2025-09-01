@@ -38,6 +38,14 @@
 16. ✅ SEC-10 Rate limiting implementation
 17. ✅ SEC-11 Input sanitization middleware
 
+#### Contracts & Standards
+- ✅ CON-01 OpenAPI v1 per service (commit under `docs/contracts/api`)
+- ✅ CON-02 Error model (problem+json, codes)
+- ✅ CON-03 Event schemas v1 + registry (JSON Schema)
+- ✅ CON-04 Topic conventions (name/partitions/retention/keys)
+- ✅ CON-05 Idempotency policy (header, storage, replay)
+- ⏺ CON-06 Security headers baseline (allowed headers list)
+
 #### 1.3 Database Setup
 18. ⏺ DB-01 Database schema creation (Product, Order, Payment, Inventory)
 19. ⏺ DB-02 Database indexes and constraints
@@ -47,6 +55,11 @@
 23. ⏺ DB-06 Database seeding with sample data
 24. ⏺ DB-07 Database backup and recovery procedures
 25. ⏺ DB-08 Database performance tuning
+
+Additional DB Enhancements:
+- ⏺ DB-09 Referential integrity & uniqueness (FKs; unique `(userId, idemKey)` on orders)
+- ⏺ DB-10 Audit & soft-delete (audit columns; optional soft-delete on product)
+- ⏺ DB-11 Test data packs (seed realistic products/categories/prices)
 
 ---
 
@@ -88,6 +101,12 @@
 54. ⏺ ORD-08 Order entity and repository
 55. ⏺ ORD-09 Order status transition validation
 
+- ⏺ ORD-10 State diagram — transitions & invariants (feeds tests)
+
+#### 2.4 Domain Foundations
+- ⏺ DOM-01 Mapping strategy — MapStruct config, DTO↔domain conventions
+- ⏺ DOM-02 Validation baseline — central annotations + standard messages
+
 ---
 
 ### Phase 3 — Payment & Inventory Services (Week 1, Days 5-6)
@@ -102,6 +121,7 @@
 62. ⏺ PAY-07 Payment DTOs and mapping
 63. ⏺ PAY-08 Payment entity and repository
 64. ⏺ PAY-09 Payment retry logic
+- ⏺ PAY-10 Idempotency & reconciliation — idempotent charge by `(orderId)`; reconciliation endpoint `/payments/{id}/status`
 
 #### 3.2 Inventory Service
 65. ⏺ INV-01 Inventory Service implementation
@@ -114,6 +134,7 @@
 72. ⏺ INV-08 Inventory DTOs and mapping
 73. ⏺ INV-09 Inventory entity and repository
 74. ⏺ INV-10 Inventory reservation conflict resolution
+- ⏺ INV-11 Concurrency model — reservation table `(orderId, productId)` uniqueness; atomic decrement; TTL job
 
 ---
 
@@ -128,6 +149,11 @@
 80. ⏺ EVT-06 Event schema validation
 81. ⏺ EVT-07 Event publishing implementation
 82. ⏺ EVT-08 Event consuming implementation
+
+- ⏺ EVT-09 Retry topics + backoff (main → retry-1 → retry-2 → dlq)
+- ⏺ EVT-10 Consumer groups & offsets plan (rebalance notes, exactly-once-enough)
+- ⏺ EVT-11 Idempotent producer & (optional) transactions for order outbox
+- ⏺ EVT-12 Lag metrics & alert thresholds
 
 #### 4.2 Saga Orchestration
 83. ⏺ SAG-01 Order creation saga (Order → Inventory → Payment)
@@ -174,6 +200,12 @@
 114. ⏺ UX-04 Accessibility (WCAG 2.1 AA)
 115. ⏺ UX-05 Performance optimization (Lighthouse >90)
 
+Additional Auth/UX:
+- ⏺ FE-15 Token refresh/renewal handling (silent renew, backoff)
+- ⏺ FE-16 Per-environment config (base URLs, Keycloak client IDs)
+- ⏺ FE-17 Error boundary + toasts
+- ⏺ FE-18 API client (JWT, x-request-id, idempotency header)
+
 ---
 
 ### Phase 6 — Observability & Resilience (Week 2, Days 5-6)
@@ -185,6 +217,8 @@
 119. ⏺ OBS-04 Health check endpoints
 120. ⏺ OBS-05 Metrics collection (Prometheus)
 121. ❌ OBS-06 Grafana dashboards (optional)
+- ⏺ OBS-07 JSON logs + PII scrubbing (MDC: `traceId`, `spanId`, `userId`, `orderId`)
+- ⏺ OBS-08 JVM/DB/Kafka metrics (thread pools, HikariCP, slow queries, consumer lag)
 
 #### 6.2 Resilience Patterns
 122. ⏺ RSL-01 Timeouts + retries (Resilience4j)
@@ -192,6 +226,9 @@
 124. ⏺ RSL-03 Kafka error handler + backoff
 125. ⏺ RSL-04 Fallback mechanisms
 126. ⏺ RSL-05 Graceful degradation
+- ⏺ RSL-06 Client timeouts catalog (per client, ≤2s default)
+- ⏺ RSL-07 Bulkheads/thread pools (isolate payment/inventory callers)
+- ⏺ RSL-08 Gateway fallbacks
 
 #### 6.3 Performance & Scalability
 127. ⏺ PER-01 API response time optimization (<500ms)
@@ -217,12 +254,17 @@
 141. ⏺ TST-11 Security testing automation
 142. ⏺ TST-12 Load testing scenarios
 143. ⏺ TST-13 Chaos testing automation
+- ⏺ TST-14 Testcontainers for integration tests (Kafka/Postgres/Redis)
+- ⏺ TST-15 Contract tests (API/event)
+- ⏺ TST-16 Negative/replay/DLQ tests
+- ⏺ TST-17 k6 perf smoke (p95 targets)
 
 #### 7.2 Chaos Engineering
 144. ⏺ CHA-01 Payment DB down → DLQ verification
 145. ⏺ CHA-02 Kafka broker failure
 146. ⏺ CHA-03 Network latency simulation
 147. ⏺ CHA-04 Service failure recovery
+- ⏺ CHA-05 Toxiproxy chaos tests (latency/packet-loss on inv/pay paths)
 
 #### 7.3 Security Testing
 148. ⏺ SEC-12 Penetration testing (OWASP ZAP)
@@ -244,6 +286,8 @@
 158. ⏺ OPS-07 Automated security scanning
 159. ⏺ OPS-08 Blue-green deployment automation
 160. ⏺ OPS-09 Disaster recovery procedures
+- ⏺ OPS-00 Repo hygiene (.editorconfig, pre-commit, CODEOWNERS)
+- ⏺ OPS-07a Supply chain — SBOM + Trivy + OWASP dep check
 
 #### 8.2 Documentation
 161. ⏳ OPS-10 README (full setup instructions)
@@ -253,6 +297,7 @@
 165. ⏺ OPS-14 Deployment guides
 166. ⏺ OPS-15 Architecture documentation
 167. ⏺ OPS-16 Troubleshooting guide
+- ⏺ OPS-10a 5-min local quickstart
 
 #### 8.3 Monitoring & Alerting
 168. ⏺ MON-01 Alert thresholds configuration
@@ -260,6 +305,7 @@
 170. ⏺ MON-03 Error rate monitoring
 171. ⏺ MON-04 Performance monitoring
 172. ⏺ MON-05 Business metrics dashboard
+- ⏺ MON-06 SLO worksheet & alert hints
 
 ---
 
@@ -294,6 +340,8 @@
 190. ⏺ DEMO-05 Backup demo scenarios
 191. ⏺ DEMO-06 Demo data setup
 192. ⏺ DEMO-07 Demo flow documentation
+- ⏺ DEMO-08 DLQ → fix → replay story
+- ⏺ DEMO-09 Zipkin “trace tour”
 
 #### 10.2 Interview Topics
 193. ⏺ INT-01 OAuth2/OIDC implementation details
@@ -304,6 +352,7 @@
 198. ⏺ INT-06 Scalability considerations
 199. ⏺ INT-07 Technical deep-dive notes
 200. ⏺ INT-08 Architecture decision rationale
+- ⏺ INT-09 Trade-off crib sheets (JWT@GW vs per-svc, outbox vs CDC, choreography vs orchestration)
 
 ---
 
@@ -316,6 +365,13 @@
 - **Phase 4**: Events must be working before frontend checkout
 - **Phase 5**: Frontend must be functional before testing
 - **Phase 6**: Observability must be in place before chaos testing
+
+Additional Sequencing Notes:
+- Contracts-first: CON-xx before coding controllers
+- DB-09..11 and DOM-01..02 before exposing endpoints
+- Events (EVT-01..12) fully green before Saga orchestration
+- Observability depth (OBS-07..08) before chaos drills
+- Consider pulling CI and Quickstart earlier (OPS-01 and OPS-10a)
 
 ### Parallel Execution Opportunities:
 - Security configuration (SEC-02 to SEC-11) can run parallel with service development

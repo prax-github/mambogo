@@ -106,20 +106,34 @@ userRateLimiter:
 ```
 
 **Visual Flow**:
+```mermaid
+sequenceDiagram
+  autonumber
+  participant C as Client
+  participant GW as Gateway
+  participant R as Redis
+
+  C->>GW: Request (X-Request-Id)
+  GW->>R: Check+Decrement(key=user:123)
+  alt Tokens available
+    R-->>GW: Allowed (remaining=42)
+    GW-->>C: 200 OK (X-RateLimit-Remaining: 42)
+  else Bucket empty
+    R-->>GW: Denied (remaining=0)
+    GW-->>C: 429 Too Many Requests (Reset header)
+  end
 ```
-Redis Key: rate_limit:user:john123
-┌─────────────────────────────────────────┐
-│ Initial: 🪙🪙🪙🪙🪙🪙🪙🪙🪙🪙 (100)      │
-│                                         │
-│ Request 1: Takes 1 token                │
-│ Result: 🪙🪙🪙🪙🪙🪙🪙🪙🪙 (99) ✅        │
-│                                         │
-│ ... 99 more requests ...                │
-│ Result: (0 tokens) ❌ RATE LIMITED      │
-│                                         │
-│ After 60 seconds: Refill to 100         │
-│ Result: 🪙🪙🪙🪙🪙🪙🪙🪙🪙🪙 (100) ✅      │
-└─────────────────────────────────────────┘
+
+**Quota Reset Timeline**:
+```mermaid
+gantt
+  dateFormat  X
+  title Token Bucket (60s window)
+  section user:123
+  Initial tokens (100)   :0, 10
+  Requests consume       :10, 40
+  Empty (throttle)       :50, 10
+  Refill to capacity     :60, 10
 ```
 
 **Algorithm Comparison**:

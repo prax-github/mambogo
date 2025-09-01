@@ -50,6 +50,49 @@ Keycloak (Our Choice):
 
 **Interview Gold**: "We chose Keycloak for **cost-effectiveness** and **deployment flexibility**, while maintaining **enterprise-grade security** and **standards compliance**."
 
+### OAuth2/OIDC Login Flow
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant User as User
+  participant SPA as React SPA
+  participant KC as Keycloak
+  participant GW as Gateway
+
+  User->>SPA: Click "Login"
+  SPA->>SPA: Generate PKCE (code_verifier + code_challenge S256)
+  SPA->>KC: Auth request (client_id, code_challenge, redirect_uri)
+  KC->>User: Login form
+  User->>KC: Credentials (username/password)
+  KC-->>SPA: Auth code + state
+  SPA->>KC: Token request (code + code_verifier)
+  KC-->>SPA: Access + Refresh tokens (JWT)
+  SPA->>GW: API calls (Authorization: Bearer JWT)
+```
+
+### Keycloak Cluster Components
+
+```mermaid
+graph TD
+  LB[Load Balancer]
+  KC1[Keycloak Node 1]
+  KC2[Keycloak Node 2] 
+  KC3[Keycloak Node 3]
+  DB[(Shared Database)]
+  Cache[(Distributed Cache)]
+
+  LB --> KC1
+  LB --> KC2
+  LB --> KC3
+  KC1 --> DB
+  KC2 --> DB
+  KC3 --> DB
+  KC1 --> Cache
+  KC2 --> Cache
+  KC3 --> Cache
+```
+
 ### 2. **PKCE Flow for Single Page Applications**
 
 **Why PKCE is Critical for SPAs**:

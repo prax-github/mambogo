@@ -19,6 +19,41 @@
 
 **Real-world Impact**: Without fine-grained scopes, a user with "USER" role might have access to all user operations across all services, violating the principle of least privilege and creating security risks.
 
+### Scopes → Audience Mapping
+
+```mermaid
+flowchart TD
+  JWT[JWT Token] --> Scopes[Scopes: product:read cart:manage order:write]
+  Scopes --> PSvc[Product Service]
+  Scopes --> CSvc[Cart Service] 
+  Scopes --> OSvc[Order Service]
+  
+  PSvc --> P1[Check: product:read ✅]
+  CSvc --> C1[Check: cart:manage ✅]
+  OSvc --> O1[Check: order:write ✅]
+```
+
+### Access Decision Flow
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant Client as Client
+  participant GW as Gateway
+  participant OrderSvc as Order Service
+
+  Client->>GW: POST /api/orders (JWT with scopes)
+  GW->>OrderSvc: Forward + X-JWT-Token
+  OrderSvc->>OrderSvc: Extract scopes from JWT
+  alt Has order:write scope
+    OrderSvc->>OrderSvc: Process order creation
+    OrderSvc-->>GW: 201 Created
+  else Missing order:write scope
+    OrderSvc-->>GW: 403 Forbidden (insufficient scopes)
+  end
+  GW-->>Client: Response
+```
+
 ---
 
 ## 🏗️ **Architecture Decisions - The "Why" Behind Choices**

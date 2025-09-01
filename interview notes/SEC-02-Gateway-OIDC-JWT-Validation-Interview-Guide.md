@@ -112,6 +112,49 @@ public class JwtPropagationFilter implements GlobalFilter {
 
 ---
 
+## 🖼️ PKCE + Gateway Request Flow (Sequence)
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant SPA as React SPA
+  participant KC as Keycloak
+  participant GW as Gateway
+  participant SVC as Downstream Service
+
+  SPA->>KC: Auth (PKCE: code_challenge S256)
+  KC-->>SPA: Auth code
+  SPA->>KC: Token (code + code_verifier)
+  KC-->>SPA: Access/Refresh tokens
+  SPA->>GW: Request (Authorization: Bearer, X-Request-Id)
+  GW->>GW: Validate JWT (issuer, audience, exp)
+  GW->>SVC: Forward + X-Request-Id + X-User-Id + X-User-Roles
+  SVC-->>GW: 200 OK
+  GW-->>SPA: 200 OK
+```
+
+## 🧱 Gateway Security Perimeter (Components)
+
+```mermaid
+graph LR
+  Client[Client / SPA]
+  GW[API Gateway]
+  KC[Keycloak]
+  PS[Product Service]
+  CS[Cart Service]
+  OS[Order Service]
+  PayS[Payment Service]
+
+  Client -->|HTTPS| GW
+  GW -->|OIDC/JWT Validate| KC
+  GW -->|lb://| PS
+  GW -->|lb://| CS
+  GW -->|lb://| OS
+  GW -->|lb://| PayS
+```
+
+---
+
 ## 🔧 **Technical Implementation Deep Dive**
 
 ### 1. **Spring Security OAuth2 Resource Server Configuration**

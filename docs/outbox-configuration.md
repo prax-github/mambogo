@@ -6,6 +6,34 @@ The order service uses an outbox pattern to ensure reliable event publishing to 
 
 ## Configuration
 
+### Order → Kafka → Payment Service Flow
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant Client as Client
+  participant OrderSvc as Order Service
+  participant DB as Database
+  participant Kafka as Kafka
+  participant PaymentSvc as Payment Service
+
+  Client->>OrderSvc: POST /orders (Idempotency-Key)
+  OrderSvc->>DB: Insert order + outbox event (transaction)
+  DB-->>OrderSvc: Success
+  OrderSvc-->>Client: 201 Created
+
+  Note over OrderSvc: Async publishing (scheduled)
+  OrderSvc->>DB: Poll outbox_events (pending)
+  DB-->>OrderSvc: Events batch
+  OrderSvc->>Kafka: Publish to order-events topic
+  Kafka-->>OrderSvc: Ack
+  OrderSvc->>DB: Mark events as published
+
+  PaymentSvc->>Kafka: Consume order-events
+  PaymentSvc->>PaymentSvc: Process payment
+  PaymentSvc->>Kafka: Publish payment-events
+```
+
 ### Enable/Disable Outbox Publishing
 
 The outbox publishing can be controlled via the `ecommerce.outbox.enabled` property:

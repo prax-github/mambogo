@@ -137,6 +137,41 @@ public int getOrder() {
 - **Before Rate Limiting**: Sanitized requests get rate limited, not raw malicious ones
 - **Before JWT**: Don't want to process authentication for malicious requests
 
+### Input Sanitization Pipeline (Sequence)
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant FE as SPA
+  participant GW as Gateway
+  participant SVC as Service
+
+  FE->>GW: Request (body, params, headers)
+  GW->>GW: Decode → Normalize → Multi-decode (URL/Unicode)
+  GW->>GW: Threat scoring (XSS/SQLi/CMD/Traversal/Evasion)
+  alt Score < threshold
+    GW->>GW: Sanitize & allow
+    GW->>SVC: Forward sanitized request
+    SVC-->>GW: 200 OK
+    GW-->>FE: 200 OK
+  else Score >= threshold
+    GW-->>FE: 400/403 Blocked (with error model)
+    GW->>GW: Audit + Metrics + Violation tracking
+  end
+```
+
+### Validation Flow Integration
+
+```mermaid
+flowchart TD
+  A[Gateway Sanitization] --> B{Allowed?}
+  B -- No --> C[Return 4xx + Audit]
+  B -- Yes --> D[Service DTO Validation]
+  D --> E{Valid?}
+  E -- No --> F[Return 400 Problem+JSON]
+  E -- Yes --> G[Business Logic]
+```
+
 ### 2. **Performance Optimization Strategies**
 
 **Interviewer Question**: *"How do you ensure this comprehensive sanitization doesn't impact gateway performance?"*

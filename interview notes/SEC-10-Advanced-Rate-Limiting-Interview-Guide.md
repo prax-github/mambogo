@@ -38,6 +38,39 @@ SEC-10 Approach (Advanced):
 └─────────────┘    └─ 20 req/min   → Payments
 ```
 
+### Advanced Rate Limiting Topology
+
+```mermaid
+graph LR
+  Client[Clients]
+  GW[API Gateway]
+  R[Redis Cluster]
+  CB[Circuit Breaker]
+  A[Adaptive Manager]
+  SVC[Services]
+
+  Client --> GW
+  GW -->|Check keys| R
+  GW -->|Policy state| CB
+  GW -->|Adjust limits| A
+  GW --> SVC
+  A --> R
+  CB --> GW
+```
+
+### Sliding Window Decision Flow
+
+```mermaid
+flowchart TD
+  A[Request arrives] --> B{Window exists?}
+  B -- No --> C[Create window bucket]
+  B -- Yes --> D[Increment count]
+  C --> E{Count <= limit?}
+  D --> E
+  E -- Yes --> F[Allow]
+  E -- No --> G[Reject 429]
+```
+
 **Trade-offs Analysis**:
 
 | Aspect | Blanket Rate Limiting | Endpoint-Specific ✅ |

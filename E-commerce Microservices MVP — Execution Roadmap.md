@@ -44,7 +44,7 @@
 - ✅ CON-03 Event schemas v1 + registry (JSON Schema)
 - ✅ CON-04 Topic conventions (name/partitions/retention/keys)
 - ✅ CON-05 Idempotency policy (header, storage, replay)
-- ⏺ CON-06 Security headers baseline (allowed headers list)
+- ✅ CON-06 Security headers baseline (allowed headers list)
 
 #### 1.3 Database Setup
 18. ⏺ DB-01 Database schema creation (Product, Order, Payment, Inventory)

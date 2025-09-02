@@ -174,3 +174,72 @@ mambogo:
         - "/actuator/.*"
         - "/api/csp/.*"
         - "/api/health/.*"
+
+  # Security Headers Configuration for Demo Environment
+  security-headers:
+    enabled: true
+    report-only: false
+    security-level: DEMO
+    monitoring:
+      enabled: true
+      log-level: INFO
+      metrics-enabled: true
+      audit-logging-enabled: true
+      performance-monitoring-enabled: true
+      compliance-validation-enabled: true
+      
+    # MIME Type Protection (X-Content-Type-Options)
+    mime-type-protection:
+      enabled: true
+      value: "nosniff"
+      
+    # Clickjacking Protection (X-Frame-Options)
+    clickjacking-protection:
+      enabled: true
+      value: "SAMEORIGIN"  # More permissive for demo
+      
+    # XSS Protection
+    xss-protection:
+      enabled: true
+      value: "1; mode=block"
+      allow-unsafe-inline: true  # More permissive for demo
+      
+    # Referrer Policy
+    referrer-policy:
+      enabled: true
+      value: "strict-origin-when-cross-origin"
+      
+    # HTTPS Enforcement (HSTS)
+    https-enforcement:
+      enabled: true
+      max-age: 31536000  # 1 year for demo
+      include-subdomains: true
+      preload: false  # Not preloaded for demo
+      
+    # Feature Control (Permissions-Policy)
+    feature-control:
+      enabled: true
+      camera: "none"
+      microphone: "none"
+      geolocation: "none"
+      payment: "none"
+      usb: "none"
+      magnetometer: "none"
+      gyroscope: "none"
+      accelerometer: "none"
+      autoplay: "none"
+      encrypted-media: "none"
+      picture-in-picture: "none"
+      fullscreen: "self"
+      display-capture: "none"
+      document-domain: "none"
+      interest-cohort: "none"
+      
+    # Additional Security Headers
+    additional-headers:
+      x-dns-prefetch-control: "off"
+      x-permitted-cross-domain-policies: "none"
+      server: "Mambogo-Gateway"
+      cache-control: "no-cache, no-store, must-revalidate"
+      pragma: "no-cache"
+      expires: "0"

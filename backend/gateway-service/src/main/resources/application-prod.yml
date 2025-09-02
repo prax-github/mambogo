@@ -192,6 +192,76 @@ mambogo:
         - "/actuator/health"
         - "/api/csp/violations"
 
+  # Security Headers Configuration for Production Environment
+  security-headers:
+    enabled: true
+    report-only: false
+    security-level: PRODUCTION
+    monitoring:
+      enabled: true
+      log-level: WARN
+      metrics-enabled: true
+      audit-logging-enabled: true
+      performance-monitoring-enabled: true
+      compliance-validation-enabled: true
+      
+    # MIME Type Protection (X-Content-Type-Options)
+    mime-type-protection:
+      enabled: true
+      value: "nosniff"
+      
+    # Clickjacking Protection (X-Frame-Options)
+    clickjacking-protection:
+      enabled: true
+      value: "DENY"  # Strict for production
+      
+    # XSS Protection
+    xss-protection:
+      enabled: true
+      value: "1; mode=block"
+      allow-unsafe-inline: false  # Strict for production
+      
+    # Referrer Policy
+    referrer-policy:
+      enabled: true
+      value: "strict-origin"
+      
+    # HTTPS Enforcement (HSTS)
+    https-enforcement:
+      enabled: true
+      max-age: 63072000  # 2 years for production
+      include-subdomains: true
+      preload: true  # Preloaded for production
+      
+    # Feature Control (Permissions-Policy)
+    feature-control:
+      enabled: true
+      camera: "none"
+      microphone: "none"
+      geolocation: "none"
+      payment: "none"
+      usb: "none"
+      magnetometer: "none"
+      gyroscope: "none"
+      accelerometer: "none"
+      autoplay: "none"
+      encrypted-media: "none"
+      picture-in-picture: "none"
+      fullscreen: "self"
+      display-capture: "none"
+      document-domain: "none"
+      interest-cohort: "none"
+      
+    # Additional Security Headers
+    additional-headers:
+      x-dns-prefetch-control: "off"
+      x-permitted-cross-domain-policies: "none"
+      server: "Mambogo-Gateway"
+      cache-control: "no-cache, no-store, must-revalidate, private"
+      pragma: "no-cache"
+      expires: "0"
+      x-powered-by: ""  # Remove X-Powered-By header
+
 # Production-specific security settings
 server:
   port: 8080

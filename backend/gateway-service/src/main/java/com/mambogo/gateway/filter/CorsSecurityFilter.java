@@ -184,24 +184,13 @@ public class CorsSecurityFilter implements GlobalFilter, Ordered {
     }
 
     /**
-     * Adds additional security headers to the response.
+     * Security headers are now handled by the centralized SecurityHeadersFilter.
+     * This method is kept for backward compatibility but no longer adds headers.
      */
     private void addSecurityHeaders(ServerHttpResponse response) {
-        // Add security headers that complement CORS
-        response.getHeaders().add("X-Content-Type-Options", "nosniff");
-        response.getHeaders().add("X-Frame-Options", "DENY");
-        response.getHeaders().add("X-XSS-Protection", "1; mode=block");
-        response.getHeaders().add("Referrer-Policy", "strict-origin-when-cross-origin");
-        
-        // Content Security Policy for additional protection
-        response.getHeaders().add("Content-Security-Policy", 
-            "default-src 'self'; " +
-            "script-src 'self' 'unsafe-inline'; " +
-            "style-src 'self' 'unsafe-inline'; " +
-            "img-src 'self' data: https:; " +
-            "connect-src 'self' " + String.join(" ", corsProperties.getAllowedOrigins()) + "; " +
-            "frame-ancestors 'none';"
-        );
+        // Security headers are now managed centrally by SecurityHeadersFilter
+        // This method is kept for backward compatibility
+        logger.debug("Security headers are now managed centrally by SecurityHeadersFilter");
     }
 
     /**

@@ -148,53 +148,18 @@ public class CspHeadersFilter implements GlobalFilter, Ordered {
     }
 
     /**
-     * Adds security headers that complement CSP for comprehensive protection.
+     * Security headers are now handled by the centralized SecurityHeadersFilter.
+     * This method is kept for backward compatibility but no longer adds headers.
      */
     private void addComplementarySecurityHeaders(ServerHttpResponse response) {
-        // X-Content-Type-Options: Prevents MIME type sniffing
-        if (!response.getHeaders().containsKey("X-Content-Type-Options")) {
-            response.getHeaders().set("X-Content-Type-Options", "nosniff");
-        }
-        
-        // X-Frame-Options: Prevents clickjacking (complements frame-ancestors CSP directive)
-        if (!response.getHeaders().containsKey("X-Frame-Options")) {
-            response.getHeaders().set("X-Frame-Options", "DENY");
-        }
-        
-        // X-XSS-Protection: Legacy XSS protection (modern browsers use CSP)
-        if (!response.getHeaders().containsKey("X-XSS-Protection")) {
-            response.getHeaders().set("X-XSS-Protection", "1; mode=block");
-        }
-        
-        // Referrer-Policy: Controls referrer information sent with requests
-        if (!response.getHeaders().containsKey("Referrer-Policy")) {
-            response.getHeaders().set("Referrer-Policy", "strict-origin-when-cross-origin");
-        }
-        
-        // Strict-Transport-Security: Enforces HTTPS (in production environments)
-        if (!response.getHeaders().containsKey("Strict-Transport-Security") && 
-            isProductionEnvironment()) {
-            response.getHeaders().set("Strict-Transport-Security", 
-                "max-age=31536000; includeSubDomains; preload");
-        }
-        
-        // Permissions-Policy: Controls browser features and APIs
-        if (!response.getHeaders().containsKey("Permissions-Policy")) {
-            response.getHeaders().set("Permissions-Policy", 
-                "camera=(), microphone=(), geolocation=(), payment=()");
-        }
+        // Security headers are now managed centrally by SecurityHeadersFilter
+        // This method is kept for backward compatibility
+        logger.debug("Security headers are now managed centrally by SecurityHeadersFilter");
     }
 
 
 
-    /**
-     * Checks if the current environment is production.
-     */
-    private boolean isProductionEnvironment() {
-        // This could be enhanced to read from environment properties
-        String profile = System.getProperty("spring.profiles.active", "local");
-        return "prod".equals(profile) || "production".equals(profile);
-    }
+
 
     @Override
     public int getOrder() {

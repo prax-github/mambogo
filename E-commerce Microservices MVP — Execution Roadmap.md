@@ -2,7 +2,7 @@
 
 **Owner:** Prashant Sinha  
 **Project:** Secure, event-driven e-commerce MVP (Spring Boot 3, Gateway, Keycloak, Kafka, Postgres, Redis, Zipkin, React/Vite)  
-**Last Updated:** 2025-08-29  
+**Last Updated:** 2025-09-03  
 **PRD Version:** Enhanced v2.0
 
 ---
@@ -47,19 +47,24 @@
 - ✅ CON-06 Security headers baseline (allowed headers list)
 
 #### 1.3 Database Setup
-18. ⏺ DB-01 Database schema creation (Product, Order, Payment, Inventory)
-19. ⏺ DB-02 Database indexes and constraints
-20. ⏺ DB-03 Flyway migration scripts
-21. ⏺ DB-04 Database encryption at rest
-22. ⏺ DB-05 Connection pooling configuration
-23. ⏺ DB-06 Database seeding with sample data
-24. ⏺ DB-07 Database backup and recovery procedures
-25. ⏺ DB-08 Database performance tuning
+18. ✅ DB-01 Database Schema, Indexes, Constraints & Migrations
+    - ✅ Schema creation (Product, Order, Payment, Inventory)
+    - ✅ Database indexes and constraints
+    - ✅ Flyway migration scripts
+    - ✅ Referential integrity & uniqueness (FKs; unique `(userId, idemKey)` on orders)
+    - ✅ Docker Compose testing infrastructure
+    - ✅ Comprehensive validation scripts
 
-Additional DB Enhancements:
-- ⏺ DB-09 Referential integrity & uniqueness (FKs; unique `(userId, idemKey)` on orders)
-- ⏺ DB-10 Audit & soft-delete (audit columns; optional soft-delete on product)
-- ⏺ DB-11 Test data packs (seed realistic products/categories/prices)
+19. ⏺ DB-02 Database Security, Connection Pooling & Performance Tuning
+    - Database encryption at rest
+    - Connection pooling configuration
+    - Database performance tuning
+
+20. ⏺ DB-03 Data Management, Backup & Test Data
+    - Database seeding with sample data
+    - Database backup and recovery procedures
+    - Audit & soft-delete (audit columns; optional soft-delete on product)
+    - Test data packs (seed realistic products/categories/prices)
 
 ---
 

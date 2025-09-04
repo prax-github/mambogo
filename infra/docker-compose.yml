@@ -22,30 +22,77 @@ services:
 
   postgres-products:
     image: postgres:15
-    environment: [POSTGRES_PASSWORD=postgres, POSTGRES_USER=postgres, POSTGRES_DB=products]
+    environment: 
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: products
     ports: ["5433:5432"]
-
-  postgres-cart:
-    image: postgres:15
-    environment: [POSTGRES_PASSWORD=postgres, POSTGRES_USER=postgres, POSTGRES_DB=cart]
-    ports: ["5436:5432"]
+    volumes:
+      - ./sql/product-service-schema.sql:/docker-entrypoint-initdb.d/01-product-schema.sql:ro
+      - ./sql/product-service-config.sql:/docker-entrypoint-initdb.d/02-product-config.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d products"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   postgres-orders:
     image: postgres:15
-    environment: [POSTGRES_PASSWORD=postgres, POSTGRES_USER=postgres, POSTGRES_DB=orders]
+    environment: 
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: orders
     ports: ["5434:5432"]
     volumes:
-      - ./sql/orders-init.sql:/docker-entrypoint-initdb.d/01-orders.sql:ro
-      - ./sql/outbox-init.sql:/docker-entrypoint-initdb.d/02-outbox.sql:ro
+      - ./sql/order-service-enhanced-schema.sql:/docker-entrypoint-initdb.d/01-order-schema.sql:ro
+      - ./sql/order-service-config.sql:/docker-entrypoint-initdb.d/02-order-config.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d orders"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   postgres-payments:
     image: postgres:15
-    environment: [POSTGRES_PASSWORD=postgres, POSTGRES_USER=postgres, POSTGRES_DB=payments]
+    environment: 
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: payments
     ports: ["5435:5432"]
+    volumes:
+      - ./sql/payment-service-schema.sql:/docker-entrypoint-initdb.d/01-payment-schema.sql:ro
+      - ./sql/payment-service-config.sql:/docker-entrypoint-initdb.d/02-payment-config.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d payments"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-inventory:
+    image: postgres:15
+    environment: 
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: inventory
+    ports: ["5436:5432"]
+    volumes:
+      - ./sql/inventory-service-schema.sql:/docker-entrypoint-initdb.d/01-inventory-schema.sql:ro
+      - ./sql/inventory-service-config.sql:/docker-entrypoint-initdb.d/02-inventory-config.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d inventory"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7
     ports: ["6379:6379"]
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   keycloak:
     image: quay.io/keycloak/keycloak:24.0
@@ -60,3 +107,26 @@ services:
   zipkin:
     image: openzipkin/zipkin:2.24
     ports: ["9411:9411"]
+
+  # Database testing and validation service
+  db-testing:
+    image: postgres:15
+    depends_on:
+      postgres-products:
+        condition: service_healthy
+      postgres-orders:
+        condition: service_healthy
+      postgres-payments:
+        condition: service_healthy
+      postgres-inventory:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: test
+      POSTGRES_DB: testing
+    volumes:
+      - ./sql/test-data.sql:/docker-entrypoint-initdb.d/01-test-data.sql:ro
+      - ./scripts:/scripts:ro
+    command: ["tail", "-f", "/dev/null"]
